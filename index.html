@@ -183,10 +183,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': API_KEY`
+                        'Authorization': 'Bearer ' + API_KEY`
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o',
+                        model: 'mimo/mimo-claw-0301',
                         messages: conversationHistory,
                         temperature: 0.7,
                         max_tokens: 2048
