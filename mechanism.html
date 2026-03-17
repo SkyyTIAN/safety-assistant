@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安全机制 | 功能安全专家</title>
+    <title>安全机制详解 | 功能安全专家</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -12,19 +12,16 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
     <header class="gradient-bg text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
+                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     </a>
                     <div>
                         <h1 class="text-xl font-bold">安全机制详解</h1>
-                        <p class="text-xs text-blue-200">机制原理、配置与诊断覆盖率</p>
+                        <p class="text-xs text-blue-200">基于 TC3xx Safety Manual Ch.6</p>
                     </div>
                 </div>
                 <nav class="hidden md:flex space-x-6">
@@ -32,6 +29,7 @@
                     <a href="chip.html" class="text-white/90 hover:text-white">芯片查询</a>
                     <a href="architecture.html" class="text-white/90 hover:text-white">架构设计</a>
                     <a href="mechanism.html" class="text-white font-medium">安全机制</a>
+                    <a href="application.html" class="text-white/90 hover:text-white">系统假设</a>
                     <a href="glossary.html" class="text-white/90 hover:text-white">术语库</a>
                 </nav>
             </div>
@@ -39,583 +37,158 @@
     </header>
 
     <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Search -->
-        <div class="mb-8">
-            <div class="flex space-x-4">
-                <input type="text" id="mechanismSearch" placeholder="搜索安全机制 (如: LBIST, MBIST, 看门狗)" 
-                    class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button onclick="searchMechanism()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
-                    🔍 搜索
-                </button>
-            </div>
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="filterMech('all')" class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium">全部</button>
+            <button onclick="filterMech('cpu')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">CPU</button>
+            <button onclick="filterMech('memory')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">内存</button>
+            <button onclick="filterMech('clock')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">时钟</button>
+            <button onclick="filterMech('analog')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">ADC</button>
+            <button onclick="filterMech('communication')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">通信</button>
+            <button onclick="filterMech('monitor')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">监控</button>
+            <button onclick="filterMech('io')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm">IO</button>
         </div>
 
-        <!-- Mechanism List -->
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="mechanismGrid">
-            <!-- LBIST -->
-            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('lbist')">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">CPU</span>
-                </div>
-                <h3 class="text-lg font-semibold">LBIST</h3>
-                <p class="text-gray-500 text-sm mt-1">逻辑内建自检</p>
-                <div class="mt-4 pt-4 border-t">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">诊断覆盖率</span>
-                        <span class="font-medium text-green-600">≥90%</span>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('lbist')" data-category="cpu">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">CPU</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">LBIST</h3><p class="text-gray-500 text-sm">逻辑内建自检</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
             </div>
-
-            <!-- MBIST -->
-            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('mbist')">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded font-medium">内存</span>
-                </div>
-                <h3 class="text-lg font-semibold">MBIST</h3>
-                <p class="text-gray-500 text-sm mt-1">内存内建自检</p>
-                <div class="mt-4 pt-4 border-t">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">诊断覆盖率</span>
-                        <span class="font-medium text-green-600">≥95%</span>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('cpu_lockstep')" data-category="cpu">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">CPU</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">CPU Lockstep</h3><p class="text-gray-500 text-sm">CPU锁步核</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥97%</span></div>
             </div>
-
-            <!-- PMBIST -->
-            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('pmbist')">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded font-medium">内存</span>
-                </div>
-                <h3 class="text-lg font-semibold">PMBIST</h3>
-                <p class="text-gray-500 text-sm mt-1">电源管理内存自检</p>
-                <div class="mt-4 pt-4 border-t">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">诊断覆盖率</span>
-                        <span class="font-medium text-green-600">≥95%</span>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('pmc')" data-category="cpu">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">CPU</span><span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">SW</span></div>
+                <h3 class="text-lg font-semibold">PMC</h3><p class="text-gray-500 text-sm">程序流监控</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">90-97%</span></div>
             </div>
-
-            <!-- 看门狗 -->
-            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('watchdog')">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded font-medium">监控</span>
-                </div>
-                <h3 class="text-lg font-semibold">看门狗</h3>
-                <p class="text-gray-500 text-sm mt-1">窗口看门狗/独立看门狗</p>
-                <div class="mt-4 pt-4 border-t">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">诊断覆盖率</span>
-                        <span class="font-medium text-green-600">90-99%</span>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('mbist')" data-category="memory">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">内存</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">MBIST</h3><p class="text-gray-500 text-sm">内存内建自检</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥95%</span></div>
             </div>
-
-            <!-- ECC -->
-            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('ecc')">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded font-medium">存储</span>
-                </div>
-                <h3 class="text-lg font-semibold">ECC</h3>
-                <p class="text-gray-500 text-sm mt-1">错误校正码</p>
-                <div class="mt-4 pt-4 border-t">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">诊断覆盖率</span>
-                        <span class="font-medium text-green-600">单比特100%</span>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('ram_ecc')" data-category="memory">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">内存</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">RAM ECC</h3><p class="text-gray-500 text-sm">RAM错误校正码</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">单比特100%</span></div>
             </div>
-
-            <!-- CPU自检 -->
-            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('cputest')">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">CPU</span>
-                </div>
-                <h3 class="text-lg font-semibold">CPU自检</h3>
-                <p class="text-gray-500 text-sm mt-1">处理器核心自检</p>
-                <div class="mt-4 pt-4 border-t">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">诊断覆盖率</span>
-                        <span class="font-medium text-green-600">90-99%</span>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('flash_ecc')" data-category="memory">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">内存</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">Flash ECC</h3><p class="text-gray-500 text-sm">Flash错误校正码</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">单比特100%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('cgm')" data-category="clock">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded">时钟</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">CGM</h3><p class="text-gray-500 text-sm">时钟发生器监控</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('adc_self_test')" data-category="analog">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-pink-100 text-pink-600 text-xs rounded">ADC</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">ADC Self-Test</h3><p class="text-gray-500 text-sm">ADC自检</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('can_crc')" data-category="communication">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-600 text-xs rounded">通信</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">CAN CRC</h3><p class="text-gray-500 text-sm">CAN CRC校验</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥97%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('e2e')" data-category="communication">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-600 text-xs rounded">通信</span><span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">SW</span></div>
+                <h3 class="text-lg font-semibold">E2E Protection</h3><p class="text-gray-500 text-sm">端到端保护</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥95%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('wdt')" data-category="monitor">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">监控</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">Watchdog</h3><p class="text-gray-500 text-sm">看门狗</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('vmon')" data-category="monitor">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">监控</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">VMON</h3><p class="text-gray-500 text-sm">电压监控</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('tmon')" data-category="monitor">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">监控</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">TMON</h3><p class="text-gray-500 text-sm">温度监控</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('pwm_mon')" data-category="io">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">IO</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">PWM Monitor</h3><p class="text-gray-500 text-sm">PWM输出监控</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('port_diag')" data-category="io">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">IO</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">PORT Diagnostics</h3><p class="text-gray-500 text-sm">IO端口诊断</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥85%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('dma_ecc')" data-category="io">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">IO</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">DMA ECC</h3><p class="text-gray-500 text-sm">DMA传输保护</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">单比特100%</span></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md" onclick="showMechanism('gtm_mon')" data-category="io">
+                <div class="flex items-center justify-between mb-3"><span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">IO</span><span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">HW</span></div>
+                <h3 class="text-lg font-semibold">GTM Monitor</h3><p class="text-gray-500 text-sm">GTM定时器监控</p>
+                <div class="mt-3 pt-3 border-t flex justify-between"><span class="text-gray-400 text-sm">DC:</span><span class="text-green-600 font-medium">≥90%</span></div>
             </div>
         </div>
     </div>
 
-    <!-- Mechanism Detail Modal -->
     <div id="mechanismModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="p-6 border-b">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h2 id="modalTitle" class="text-2xl font-bold">机制名称</h2>
-                        <p id="modalSubtitle" class="text-gray-500">机制分类</p>
-                    </div>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
+                <div class="flex justify-between"><div><h2 id="modalTitle" class="text-2xl font-bold">名称</h2><p id="modalSubtitle" class="text-gray-500">分类</p></div><button onclick="closeModal()" class="text-gray-400">✕</button></div>
             </div>
-            <div id="modalContent" class="p-6">
-                <!-- 动态内容 -->
-            </div>
+            <div id="modalContent" class="p-6"></div>
         </div>
     </div>
 
     <script>
-        const mechanismDetail = {
-            // ===== CPU 模块 =====
-            lbist: {
-                name: 'LBIST (Logic Built-In Self-Test)',
-                category: 'CPU - 逻辑自检',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.1',
-                description: '逻辑内建自检是一种在芯片内部集成的自检功能，用于检测CPU逻辑单元的失效。通过在芯片内部生成测试向量并比较预期结果，可以检测出逻辑电路中的单点失效和双点失效。',
-                working: [
-                    '1. 启动时触发LBIST',
-                    '2. 内部测试向量发生器产生伪随机测试序列',
-                    '3. 测试序列施加到CPU核心逻辑',
-                    '4. 响应分析器捕获输出并与预期结果比对',
-                    '5. 生成PASS/FAIL报告'
-                ],
-                config: [
-                    '// LBIST 配置 (TC3xx)',
-                    'Scu_Lbist_Init(&Scu_LbistConfig);',
-                    'Scu_Lbist_SetConfig(LBIST_NORMAL_MODE, 0x1234);',
-                    'Scu_Lbist_Start();',
-                    'while(Scu_Lbist_GetResult() == LBIST_RUNNING);'
-                ],
-                dc: { low: '60-90%', medium: '90-95%', high: '≥95%' },
-                impact: '取消LBIST将导致CPU逻辑失效无法检测，可能导致错误计算结果。',
-                iso: 'ISO 26262 Part 6, 7.4.1'
-            },
-            cpu_lockstep: {
-                name: 'CPU 锁步 (Lockstep)',
-                category: 'CPU - 冗余',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.1',
-                description: 'CPU锁步技术使用两个完全同步的CPU核心执行相同的指令，通过比对输出结果来检测单点失效。TC3xx的P1内核支持锁步模式。',
-                working: [
-                    '1. 主核和锁步核同步执行相同指令',
-                    '2. 每周期比对两个核的输出',
-                    '3. 检测到不一致时触发错误信号',
-                    '4. 系统进入安全状态'
-                ],
-                config: [
-                    '// 锁步核配置',
-                    'CPU_LCK_Init();',
-                    'CPU_LCK_Enable(CPU_0, CPU_1);',
-                    'CPU_LCK_SetReaction(REACTION_SAFE_STATE);'
-                ],
-                dc: { low: 'N/A', medium: '90-95%', high: '≥97%' },
-                impact: '取消锁步核将失去对CPU瞬态故障的检测能力。',
-                iso: 'ISO 26262 Part 5, 7.4.1'
-            },
-            pmc: {
-                name: 'PMC (Program Flow Monitor)',
-                category: 'CPU - 程序流监控',
-                type: 'SW',
-                reference: 'TC3xx Safety Manual Ch.5.1',
-                description: '程序流监控通过监控软件执行顺序来检测程序跑飞、死循环等故障。使用PMC模块可以配置监控点和超时时间。',
-                working: [
-                    '1. 在关键代码点插入监控调用',
-                    '2. PMC模块记录各监控点的调用时间',
-                    '3. 超时则触发错误中断',
-                    '4. 系统进入安全状态'
-                ],
-                config: [
-                    '// PMC 配置',
-                    'PMC_Init(&PmcConfig);',
-                    'PMC_SetTaskWatchdog(100, 10); // 100ms超时',
-                    'PMC_Start();',
-                    '// 任务中',
-                    'PMC_Kick(); // 喂狗'
-                ],
-                dc: { low: '60-80%', medium: '80-90%', high: '90-97%' },
-                impact: '取消PMC可能导致程序死循环无法检测。',
-                iso: 'ISO 26262 Part 5, 7.4.9'
-            },
+    const mechanismDetail = {
+        lbist: {name:'LBIST',category:'CPU - 逻辑自检',type:'HW',reference:'TC3xx SM Ch.6.1',description:'逻辑内建自检检测CPU逻辑单元失效，通过内部测试向量检测单点和双点故障。',working:['启动时触发LBIST','内部产生伪随机测试向量','施加到CPU核心逻辑','捕获响应并比对','生成PASS/FAIL报告'],config:['Scu_Lbist_Init(&Scu_LbistConfig);','Scu_Lbist_SetConfig(LBIST_NORMAL_MODE);'],dc:{low:'60-90%',medium:'90-95%',high:'≥95%'},impact:'取消LBIST将无法检测CPU逻辑失效。',iso:'ISO 26262 Part 5, 7.4.1'},
+        cpu_lockstep: {name:'CPU Lockstep',category:'CPU - 冗余',type:'HW',reference:'TC3xx SM Ch.6.1',description:'CPU锁步使用两个同步执行的CPU核心，通过比对输出检测单点失效。',working:['主核和锁步核同步执行','每周期比对输出','检测到不一致触发错误','进入安全状态'],config:['CPU_LCK_Init();','CPU_LCK_Enable(CPU_0, CPU_1);'],dc:{low:'N/A',medium:'90-95%',high:'≥97%'},impact:'取消锁步将失去对CPU瞬态故障的检测。',iso:'ISO 26262 Part 5, 7.4.1'},
+        pmc: {name:'PMC',category:'CPU - 程序流监控',type:'SW',reference:'TC3xx SM Ch.6.1',description:'程序流监控检测软件执行顺序异常。',working:['配置监控点','记录执行时间戳','超时触发错误','进入安全状态'],config:['PMC_Init(&PmcConfig);','PMC_SetTaskWatchdog(100);'],dc:{low:'60-80%',medium:'80-90%',high:'90-97%'},impact:'取消PMC可能导致程序死循环无法检测。',iso:'ISO 26262 Part 5, 7.4.9'},
+        mbist: {name:'MBIST',category:'内存 - 自检',type:'HW',reference:'TC3xx SM Ch.6.2',description:'内存内建自检检测SRAM/Flash物理失效。',working:['配置MBIST','选择测试算法','执行测试','分析失败地址','报告结果'],config:['Mcu_Mbist_Init(&MbistConfig);','Mcu_Mbist_Execute();'],dc:{low:'70-85%',medium:'85-95%',high:'≥95%'},impact:'取消MBIST将无法检测内存失效。',iso:'ISO 26262 Part 5, 7.4.2'},
+        ram_ecc: {name:'RAM ECC',category:'内存 - 错误纠正',type:'HW',reference:'TC3xx SM Ch.6.2',description:'RAM ECC为SRAM提供单比特错误纠正和双比特错误检测。',working:['写入时计算ECC','存储数据和校验位','读取时验证ECC','纠正单比特/报告双比特'],config:['Mcu_EnableRamEcc(SRAM0);','Mcu_RegisterEccCallback();'],dc:{low:'单比特100%',medium:'双比特90%',high:'双比特99%'},impact:'取消ECC无法检测内存软错误。',iso:'ISO 26262 Part 5, 7.4.2'},
+        flash_ecc: {name:'Flash ECC',category:'内存 - 错误纠正',type:'HW',reference:'TC3xx SM Ch.6.2',description:'Flash ECC为PFlash/DFlash提供错误检测和纠正。',working:['写入时计算ECC','存储数据和校验位','读取时验证ECC'],config:['Mcu_EnableFlashEcc(PFLASH);'],dc:{low:'单比特100%',medium:'双比特90%',high:'双比特99%'},impact:'取消Flash ECC无法检测存储错误。',iso:'ISO 26262 Part 5, 7.4.2'},
+        cgm: {name:'CGM',category:'时钟 - 监控',type:'HW',reference:'TC3xx SM Ch.6.3',description:'时钟发生器监控监测主时钟和PLL工作状态。',working:['监测主时钟频率','检测时钟缺失','超阈值触发错误'],config:['SCU_CGM_Init();','SCU_CGM_SetMonitor();'],dc:{low:'60-80%',medium:'80-90%',high:'≥90%'},impact:'取消时钟监控可能导致系统运行在异常时钟下。',iso:'ISO 26262 Part 5, 7.4.6'},
+        adc_self_test: {name:'ADC Self-Test',category:'ADC - 自检',type:'HW',reference:'TC3xx SM Ch.6.4',description:'ADC自检通过内部参考电压验证ADC转换功能正确性。',working:['启动ADC自检','内部产生已知电压','ADC转换并比对结果','超出容差报告失败'],config:['Adc_Init(&AdcConfig);','Adc_EnableSelfTest();'],dc:{low:'60-80%',medium:'80-90%',high:'≥90%'},impact:'取消ADC自检无法检测ADC硬件失效。',iso:'ISO 26262 Part 5, 7.4.2'},
+        can_crc: {name:'CAN CRC',category:'通信 - 保护',type:'HW',reference:'TC3xx SM Ch.6.5',description:'CAN协议层提供CRC校验检测传输错误。',working:['发送节点计算CRC','接收节点重新计算','比对CRC值','错误帧自动处理'],config:['Can_Init(&CanConfig);'],dc:{low:'90%',medium:'95%',high:'≥97%'},impact:'取消CRC可能导致错误数据被接收。',iso:'ISO 26262 Part 6, 7.4.7'},
+        e2e: {name:'E2E Protection',category:'通信 - 端到端',type:'SW',reference:'TC3xx SM Ch.6.5',description:'E2E保护为AUTOSAR通信提供端到端数据保护。',working:['发送方添加CRC和计数器','接收方验证','检测数据丢失/重复/错序'],config:['E2E_Init(&E2EConfig);','E2E_Protect();'],dc:{low:'80%',medium:'90%',high:'≥95%'},impact:'取消E2E可能导致通信数据错误无法检测。',iso:'ISO 26262 Part 6, 7.4.7'},
+        wdt: {name:'Watchdog',category:'监控 - 软件执行',type:'HW',reference:'TC3xx SM Ch.6.6',description:'看门狗检测软件死循环或死锁。',working:['看门狗初始化','软件定期喂狗','超时触发复位','进入安全状态'],config:['Wdt_Init(&WdtConfig);','Wdt_SetWindow(50,100);'],dc:{low:'60-80%',medium:'80-90%',high:'≥90%'},impact:'取消看门狗将导致软件死循环无法检测。',iso:'ISO 26262 Part 6, 7.4.10'},
+        vmon: {name:'VMON',category:'监控 - 电压',type:'HW',reference:'TC3xx SM Ch.6.7',description:'电压监控模块监测芯片供电电压。',working:['监测各路供电电压','与参考电压比对','超阈值触发中断/复位'],config:['SCU_VMON_Init();','SCU_VMON_SetThreshold();'],dc:{low:'60-80%',medium:'80-90%',high:'≥90%'},impact:'取消电压监控可能导致芯片在异常电压下工作。',iso:'ISO 26262 Part 5, 7.4.6'},
+        tmon: {name:'TMON',category:'监控 - 温度',type:'HW',reference:'TC3xx SM Ch.6.7',description:'温度监控模块监测芯片结温。',working:['内置温度传感器测量结温','与阈值比对','超温触发降频或复位'],config:['SCU_TMON_Init();','SCU_TMON_SetThreshold(145);'],dc:{low:'N/A',medium:'80%',high:'≥90%'},impact:'取消温度监控可能导致芯片过热损坏。',iso:'ISO 26262 Part 5'},
+        pwm_mon: {name:'PWM Monitor',category:'IO - 输出监控',type:'HW',reference:'TC3xx SM Ch.6.8',description:'PWM输出监控通过捕获模块检测PWM正确性。',working:['配置GTM捕获功能','捕获PWM输出','计算实际占空比/频率','与预期值比对'],config:['Gtm_Init(&GtmConfig);','Gtm_EnablePwmMonitor();'],dc:{low:'60-80%',medium:'80-90%',high:'≥90%'},impact:'取消PWM监控可能无法检测输出错误。',iso:'ISO 26262 Part 5, 7.4.5'},
+        port_diag: {name:'PORT Diagnostics',category:'IO - 诊断',type:'HW',reference:'TC3xx SM Ch.6.8',description:'IO端口诊断检测端口开路/短路故障。',working:['配置诊断模式','注入测试信号','检测响应','报告故障'],config:['Port_Init(&PortConfig);','Port_SetDiagnostics();'],dc:{low:'60-70%',medium:'70-85%',high:'≥85%'},impact:'取消端口诊断可能无法检测IO故障。',iso:'ISO 26262 Part 5'},
+        dma_ecc: {name:'DMA ECC',category:'IO - 传输保护',type:'HW',reference:'TC3xx SM Ch.6.9',description:'DMA模块提供传输错误检测。',working:['DMA传输完成检查状态','检测地址/传输错误','错误时触发中断'],config:['Dma_Init(&DmaConfig);','Dma_EnableErrorInterrupt();'],dc:{low:'单比特80%',medium:'单比特90%',high:'单比特100%'},impact:'取消DMA ECC可能导致错误数据传输。',iso:'ISO 26262 Part 5'},
+        gtm_mon: {name:'GTM Monitor',category:'IO - 定时器监控',type:'HW',reference:'TC3xx SM Ch.6.10',description:'GTM定时器监控检测定时器故障。',working:['配置GTM自检','检测定时器失效','超时触发错误'],config:['Gtm_Init(&GtmConfig);','Gtm_EnableSelfTest();'],dc:{low:'60-80%',medium:'80-90%',high:'≥90%'},impact:'取消GTM监控可能无法检测定时器故障。',iso:'ISO 26262 Part 5'}
+    };
 
-            // ===== 内存模块 =====
-            ram_ecc: {
-                name: 'RAM ECC (Error Correction Code)',
-                category: '内存 - 错误纠正',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.2',
-                description: 'RAM ECC为内存提供单比特错误纠正和双比特错误检测功能。TC3xx的SRAM和Cache均支持ECC保护。',
-                working: [
-                    '1. 写入数据时计算ECC校验位',
-                    '2. 存储数据和校验位',
-                    '3. 读取时重新计算ECC',
-                    '4. 纠正单比特错误 / 报告双比特错误'
-                ],
-                config: [
-                    '// SRAM ECC配置',
-                    'Mcu_InitRam(&RamConfig);',
-                    'Mcu_EnableRamEcc(MEMORY_SRAM0);',
-                    'Mcu_RegisterErrorCallback(ECC_Error_Handler);'
-                ],
-                dc: { low: '单比特100%', medium: '双比特90%', high: '双比特99%' },
-                impact: '取消ECC将无法检测内存软错误。',
-                iso: 'ISO 26262 Part 5, 7.4.2'
-            },
-            mbist: {
-                name: 'MBIST (Memory Built-In Self-Test)',
-                category: '内存 - 自检',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.2',
-                description: '内存内建自检用于检测RAM和Flash中的物理失效，包括位翻转、桥连、开路等故障模式。',
-                working: [
-                    '1. 配置MBIST控制器',
-                    '2. 选择测试算法(March, MATSIG)',
-                    '3. 执行测试',
-                    '4. 分析失败地址',
-                    '5. 报告结果'
-                ],
-                config: [
-                    '// MBIST 配置',
-                    'Mcu_Mbist_Init(&MbistConfig);',
-                    'Mcu_Mbist_SetAlgorithm(MBIST_MARCH);',
-                    'Mcu_Mbist_Execute(RAM_START, RAM_END);'
-                ],
-                dc: { low: '70-85%', medium: '85-95%', high: '≥95%' },
-                impact: '取消MBIST将无法检测内存失效。',
-                iso: 'ISO 26262 Part 6, 7.4.2'
-            },
-
-            // ===== ADC 模块 =====
-            adc_self_test: {
-                name: 'ADC 自检',
-                category: 'ADC - 功能检测',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.3',
-                description: 'ADC自检通过内部参考电压验证ADC转换功能的正确性，包括线性度、偏移误差等参数的检测。',
-                working: [
-                    '1. 启动ADC自检模式',
-                    '2. 内部产生已知电压',
-                    '3. ADC转换并比对结果',
-                    '4. 超出容差则报告失败'
-                ],
-                config: [
-                    '// ADC自检配置',
-                    'Adc_Init(&AdcConfig);',
-                    'Adc_EnableSelfTest(ADC_CHANNEL_0);',
-                    'Adc_StartSelfTest();'
-                ],
-                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
-                impact: '取消ADC自检无法检测ADC硬件失效。',
-                iso: 'ISO 26262 Part 6, 7.4.2'
-            },
-            adc_duality: {
-                name: 'ADC 通道冗余',
-                category: 'ADC - 冗余',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.3',
-                description: '使用双通道ADC对同一信号进行采样，通过比对结果来检测ADC失效。适用于ASIL C/D系统。',
-                working: [
-                    '1. 配置双通道同步采样',
-                    '2. 两通道同时采样同一信号',
-                    '3. 比对两个采样值',
-                    '4. 超差触发错误处理'
-                ],
-                config: [
-                    '// 双通道配置',
-                    'Adc_SetDualMode(ADC_CH0, ADC_CH1);',
-                    'Adc_SetComparisonTolerance(10); // 10位数容忍'
-                ],
-                dc: { low: 'N/A', medium: '90-95%', high: '≥97%' },
-                impact: '取消通道冗余将失去对ADC故障的冗余检测。',
-                iso: 'ISO 26262 Part 5, 7.4.3'
-            },
-
-            // ===== PWM/GTM 模块 =====
-            pwm_monitor: {
-                name: 'PWM 输出监控',
-                category: 'PWM - 输出检测',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.4',
-                description: 'PWM输出监控通过捕获模块检测PWM输出的正确性，包括频率、占空比等参数。',
-                working: [
-                    '1. 配置GTM捕获功能',
-                    '2. 捕获PWM输出信号',
-                    '3. 计算实际占空比/频率',
-                    '4. 与预期值比对'
-                ],
-                config: [
-                    '// GTM PWM监控',
-                    'Gtm_Init(&GtmConfig);',
-                    'Gtm_EnablePwmMonitor(PWM_OUT, CAP_IN);',
-                    'Gtm_SetTolerance(5, 5); // 5%容差'
-                ],
-                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
-                impact: '取消PWM监控可能无法检测PWM输出错误。',
-                iso: 'ISO 26262 Part 5, 7.4.5'
-            },
-
-            // ===== 时钟模块 =====
-            clock_monitor: {
-                name: '时钟监控 (CGM)',
-                category: '时钟 - 失效检测',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.5',
-                description: '时钟监控系统监测主时钟和PLL的工作状态，检测时钟失效、频率偏差等故障。',
-                working: [
-                    '1. 时钟监控器使用独立参考时钟',
-                    '2. 监测主时钟频率',
-                    '3. 检测时钟缺失',
-                    '4. 超阈值触发错误'
-                ],
-                config: [
-                    '// 时钟监控配置',
-                    'SCU_CGM_Init();',
-                    'SCU_CGM_SetMonitor(PLL, 5); // 5%阈值',
-                    'SCU_CGM_Enable();'
-                ],
-                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
-                impact: '取消时钟监控可能导致系统运行在异常时钟下。',
-                iso: 'ISO 26262 Part 5, 7.4.6'
-            },
-
-            // ===== 看门狗模块 =====
-            wdt: {
-                name: '看门狗 (Watchdog)',
-                category: '监控 - 软件执行',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.6',
-                description: '看门狗是一种定时器机制，用于检测软件死循环或死锁。TC3xx内部集成窗口看门狗。',
-                working: [
-                    '1. 看门狗初始化',
-                    '2. 软件在正常任务中定期喂狗',
-                    '3. 如果软件死循环，超时发生',
-                    '4. 触发系统复位或安全状态'
-                ],
-                config: [
-                    '// 窗口看门狗配置',
-                    'Wdt_Init(&WdtConfig);',
-                    'Wdt_SetWindow(50, 100); // 50-100ms',
-                    'Wdt_Start();',
-                    '// 喂狗',
-                    'Wdt_Clear();'
-                ],
-                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
-                impact: '取消看门狗将导致软件死循环无法检测。',
-                iso: 'ISO 26262 Part 6, 7.4.10'
-            },
-
-            // ===== 通信模块 =====
-            can_crc: {
-                name: 'CAN CRC 校验',
-                category: '通信 - 数据保护',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.7',
-                description: 'CAN协议层提供CRC校验，用于检测CAN报文传输错误。',
-                working: [
-                    '1. 发送节点计算CRC',
-                    '2. 接收节点重新计算CRC',
-                    '3. 比对CRC值',
-                    '4. 错误帧自动处理'
-                ],
-                config: [
-                    '// CAN配置中启用CRC',
-                    'Can_Init(&CanConfig);',
-                    'Can_SetRxFilter(0, STD_ID);'
-                ],
-                dc: { low: '90%', medium: '95%', high: '≥97%' },
-                impact: '取消CRC可能导致错误数据被接收。',
-                iso: 'ISO 26262 Part 6, 7.4.7'
-            },
-            e2e: {
-                name: 'E2E 保护',
-                category: '通信 - 端到端保护',
-                type: 'SW',
-                reference: 'TC3xx Safety Manual Ch.5.7',
-                description: 'E2E(End-to-End)保护为AUTOSAR通信提供端到端的数据保护，包括CRC、计数器等。',
-                working: [
-                    '1. 发送方添加CRC和计数器',
-                    '2. 接收方验证CRC和计数器',
-                    '3. 检测数据丢失/重复/错序',
-                    '4. 报告错误或丢弃数据'
-                ],
-                config: [
-                    '// E2E配置',
-                    'E2E_Init(&E2EConfig);',
-                    'E2E_Protect(&txData, counter);',
-                    'E2E_Verify(&rxData);'
-                ],
-                dc: { low: '80%', medium: '90%', high: '≥95%' },
-                impact: '取消E2E可能导致通信数据错误无法检测。',
-                iso: 'ISO 26262 Part 6, 7.4.7'
-            },
-
-            // ===== 电压/温度监控 =====
-            vmon: {
-                name: '电压监控 (VMON)',
-                category: '供电 - 电压检测',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.8',
-                description: '电压监控模块监测芯片供电电压，检测欠压、过压等异常情况。',
-                working: [
-                    '1. 监测各路供电电压',
-                    '2. 与内部参考电压比对',
-                    '3. 超阈值触发中断/复位',
-                    '4. 进入安全状态'
-                ],
-                config: [
-                    '// VMON配置',
-                    'SCU_VMON_Init();',
-                    'SCU_VMON_SetThreshold(VSUPPLY, 2.7, 5.5);',
-                    'SCU_VMON_Enable();'
-                ],
-                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
-                impact: '取消电压监控可能导致芯片在异常电压下工作。',
-                iso: 'ISO 26262 Part 5, 7.4.6'
-            },
-            tmon: {
-                name: '温度监控 (TMON)',
-                category: '供电 - 温度检测',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.8',
-                description: '温度监控模块监测芯片结温，防止过热导致功能失效或损坏。',
-                working: [
-                    '1. 内置温度传感器测量结温',
-                    '2. 与阈值比对',
-                    '3. 超温触发降频或复位',
-                    '4. 通知系统采取散热措施'
-                ],
-                config: [
-                    '// 温度监控配置',
-                    'SCU_TMON_Init();',
-                    'SCU_TMON_SetThreshold(145); // 145°C',
-                    'SCU_TMON_Enable();'
-                ],
-                dc: { low: 'N/A', medium: '80%', high: '≥90%' },
-                impact: '取消温度监控可能导致芯片过热损坏。',
-                iso: 'ISO 26262 Part 5'
-            },
-
-            // ===== 中断/DMA =====
-           dma: {
-                name: 'DMA 错误检测',
-                category: '传输 - 错误检测',
-                type: 'HW',
-                reference: 'TC3xx Safety Manual Ch.5.9',
-                description: 'DMA模块提供传输错误检测，包括地址错误、传输错误等。',
-                working: [
-                    '1. DMA传输完成后检查状态',
-                    '2. 检测地址/传输错误',
-                    '3. 错误时触发中断',
-                    '4. 软件处理错误'
-                ],
-                config: [
-                    '// DMA错误处理',
-                    'Dma_Init(&DmaConfig);',
-                    'Dma_EnableErrorInterrupt(CHANNEL_0);'
-                ],
-                dc: { low: '60%', medium: '80%', high: '≥90%' },
-                impact: '取消DMA错误检测可能导致错误数据传输。',
-                iso: 'ISO 26262 Part 5'
-            }
-        };
-
-        function showMechanism(mechId) {
-            const mech = mechanismDetail[mechId];
-            if (!mech) return;
-
-            document.getElementById('modalTitle').textContent = mech.name;
-            document.getElementById('modalSubtitle').textContent = mech.category;
-
-            // 确定类型标签颜色
-            const typeColor = mech.type === 'HW' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600';
-
-            let content = `
-                <div class="space-y-6">
-                    <!-- 类型和参考 -->
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 ${typeColor} rounded-full text-sm font-medium">${mech.type}</span>
-                        <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">${mech.reference || 'TC3xx'}</span>
-                    </div>
-
-                    <!-- 描述 -->
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-semibold mb-2">📖 工作原理</h4>
-                        <p class="text-gray-700">${mech.description}</p>
-                    </div>
-
-                    <!-- 工作步骤 -->
-                    <div>
-                        <h4 class="font-semibold mb-3">⚙️ 工作流程</h4>
-                        <ol class="space-y-2">
-                            ${mech.working.map((step, i) => `
-                                <li class="flex items-start">
-                                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">${i+1}</span>
-                                    <span class="text-gray-700">${step.replace(/^\d+\.\s*/, '')}</span>
-                                </li>
-                            `).join('')}
-                        </ol>
-                    </div>
-
-                    <!-- 配置代码 -->
-                    <div>
-                        <h4 class="font-semibold mb-3">💻 配置示例 (TC3xx)</h4>
-                        <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>${mech.config.join('\n')}</code></pre>
-                    </div>
-
-                    <!-- 诊断覆盖率 -->
-                    <div>
-                        <h4 class="font-semibold mb-3">📊 诊断覆盖率 (DC)</h4>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="bg-yellow-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-500">低配置</div>
-                                <div class="text-lg font-bold text-yellow-600">${mech.dc.low}</div>
-                            </div>
-                            <div class="bg-green-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-500">中配置</div>
-                                <div class="text-lg font-bold text-green-600">${mech.dc.medium}</div>
-                            </div>
-                            <div class="bg-blue-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-500">高配置</div>
-                                <div class="text-lg font-bold text-blue-600">${mech.dc.high}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 影响分析 -->
-                    <div class="bg-red-50 p-4 rounded-lg">
-                        <h4 class="font-semibold mb-2 text-red-700">⚠️ 取消影响</h4>
-                        <p class="text-gray-700">${mech.impact}</p>
-                    </div>
-
-                    <!-- ISO 条款 -->
-                    <div>
-                        <h4 class="font-semibold mb-2">📚 ISO 26262 条款</h4>
-                        <span class="px-3 py-1 bg-gray-100 rounded-full text-sm">${mech.iso}</span>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('modalContent').innerHTML = content;
-            document.getElementById('mechanismModal').classList.remove('hidden');
-            document.getElementById('mechanismModal').classList.add('flex');
-        }
-
-        function closeModal() {
-            document.getElementById('mechanismModal').classList.add('hidden');
-            document.getElementById('mechanismModal').classList.remove('flex');
-        }
-
-        function searchMechanism() {
-            const query = document.getElementById('mechanismSearch').value.toLowerCase();
-            if (query.includes('lbist')) showMechanism('lbist');
-            else if (query.includes('mbist') || query.includes('内存')) showMechanism('mbist');
-            else if (query.includes('看门狗') || query.includes('watchdog')) showMechanism('watchdog');
-            else if (query.includes('ecc')) showMechanism('ecc');
-            else if (query.includes('cpu')) showMechanism('cputest');
-            else alert('未找到该安全机制');
-        }
+    function showMechanism(mechId) {
+        const mech = mechanismDetail[mechId];
+        if (!mech) return;
+        document.getElementById('modalTitle').textContent = mech.name;
+        document.getElementById('modalSubtitle').textContent = mech.category;
+        const typeColor = mech.type === 'HW' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600';
+        document.getElementById('modalContent').innerHTML = `
+            <div class="flex flex-wrap gap-2 mb-4"><span class="px-3 py-1 ${typeColor} rounded-full text-sm">${mech.type}</span><span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">${mech.reference}</span></div>
+            <div class="bg-blue-50 p-4 rounded-lg mb-4"><h4 class="font-semibold mb-2">📖 原理</h4><p class="text-gray-700">${mech.description}</p></div>
+            <div class="mb-4"><h4 class="font-semibold mb-2">⚙️ 工作流程</h4><ol class="space-y-1">${mech.working.map((s,i)=>`<li class="flex items-center"><span class="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs mr-2">${i+1}</span>${s}</li>`).join('')}</ol></div>
+            <div class="bg-gray-900 text-green-400 p-4 rounded-lg mb-4 overflow-x-auto"><code>${mech.config.join('\n')}</code></div>
+            <div class="grid grid-cols-3 gap-4 mb-4"><div class="bg-yellow-50 p-3 rounded-lg text-center"><div class="text-xs text-gray-500">低</div><div class="font-bold text-yellow-600">${mech.dc.low}</div></div><div class="bg-green-50 p-3 rounded-lg text-center"><div class="text-xs text-gray-500">中</div><div class="font-bold text-green-600">${mech.dc.medium}</div></div><div class="bg-blue-50 p-3 rounded-lg text-center"><div class="text-xs text-gray-500">高</div><div class="font-bold text-blue-600">${mech.dc.high}</div></div></div>
+            <div class="bg-red-50 p-4 rounded-lg mb-4"><h4 class="font-semibold text-red-700 mb-2">⚠️ 取消影响</h4><p class="text-gray-700">${mech.impact}</p></div>
+            <div><h4 class="font-semibold mb-2">📚 ISO 26262</h4><span class="px-3 py-1 bg-gray-100 rounded-full text-sm">${mech.iso}</span></div>
+        `;
+        document.getElementById('mechanismModal').classList.remove('hidden');
+        document.getElementById('mechanismModal').classList.add('flex');
+    }
+    function closeModal(){document.getElementById('mechanismModal').classList.add('hidden');document.getElementById('mechanismModal').classList.remove('flex');}
+    function filterMech(cat){
+        document.querySelectorAll('#mechanismGrid>div').forEach(d=>{d.style.display=(cat==='all'||d.dataset.category===cat)?'block':'none';});
+    }
     </script>
 </body>
 </html>
