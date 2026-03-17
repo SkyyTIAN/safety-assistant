@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>架构设计 | 功能安全专家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-xl font-bold">架构设计</h1>
+                        <p class="text-xs text-blue-200">安全机制推荐系统</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-white/90 hover:text-white">首页</a>
+                    <a href="chip.html" class="text-white/90 hover:text-white">芯片查询</a>
+                    <a href="architecture.html" class="text-white font-medium">架构设计</a>
+                    <a href="mechanism.html" class="text-white/90 hover:text-white">安全机制</a>
+                    <a href="glossary.html" class="text-white/90 hover:text-white">术语库</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Input Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-4">📥 输入系统架构</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- ASIL Level -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ASIL 等级</label>
+                    <select id="asilLevel" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">请选择...</option>
+                        <option value="A">ASIL A</option>
+                        <option value="B">ASIL B</option>
+                        <option value="C">ASIL C</option>
+                        <option value="D">ASIL D</option>
+                    </select>
+                </div>
+
+                <!-- MCU Type -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">MCU 型号</label>
+                    <select id="mcuType" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">请选择...</option>
+                        <option value="tc377">AURIX TC377</option>
+                        <option value="tc387">AURIX TC387</option>
+                        <option value="s32k">NXP S32K</option>
+                        <option value="rh850">Renesas RH850</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Peripherals -->
+            <div class="mt-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">使用的外设资源 (多选)</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="adc" class="peripheral-checkbox">
+                        <span>ADC 采样</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="pwm" class="peripheral-checkbox">
+                        <span>PWM 控制</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="watchdog" class="peripheral-checkbox">
+                        <span>看门狗</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="cpu" class="peripheral-checkbox">
+                        <span>CPU</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="ram" class="peripheral-checkbox">
+                        <span>RAM</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="flash" class="peripheral-checkbox">
+                        <span>Flash</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="can" class="peripheral-checkbox">
+                        <span>CAN通信</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="clock" class="peripheral-checkbox">
+                        <span>时钟</span>
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="generateRecommendation()" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-medium">
+                🔧 生成安全机制推荐
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden">
+            <h3 class="text-xl font-bold mb-6">📋 安全机制推荐</h3>
+            
+            <!-- Required Mechanisms -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-semibold text-lg">✅ 必需安全机制</h4>
+                    <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm font-medium">必须实现</span>
+                </div>
+                <div id="requiredList" class="space-y-3">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+
+            <!-- Optional Mechanisms -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-semibold text-lg">�可选安全机制</h4>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm font-medium">建议实现</span>
+                </div>
+                <div id="optionalList" class="space-y-3">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+
+            <!-- Code Template -->
+            <div class="bg-gray-900 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-semibold text-lg text-white">💻 配置代码模板</h4>
+                    <button onclick="copyCode()" class="text-gray-400 hover:text-white text-sm">📋 复制</button>
+                </div>
+                <pre id="codeTemplate" class="text-green-400 text-sm overflow-x-auto"><code>// 点击生成后显示代码模板</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mechanismData = {
+            adc: {
+                required: [
+                    { name: 'ADC自检', description: '启动时进行ADC功能自检', iso: 'Part 6, 7.4.2' },
+                    { name: '通道冗余', description: '使用双通道ADC进行冗余采样', iso: 'Part 5, 7.4.3' }
+                ],
+                optional: [
+                    { name: '周期性自检', description: '运行时周期性触发ADC自检', iso: 'Part 6, 7.4.2' },
+                    { name: '范围检查', description: '采样值范围监控', iso: 'Part 5, 7.4.4' }
+                ]
+            },
+            pwm: {
+                required: [
+                    { name: 'PWM输出监控', description: '监控PWM输出引脚状态', iso: 'Part 6, 7.4.5' }
+                ],
+                optional: [
+                    { name: '死区监控', description: '防止上下管直通', iso: 'Part 5, 7.4.5' },
+                    { name: '占空比检查', description: '验证PWM占空比在合理范围', iso: 'Part 5, 7.4.4' }
+                ]
+            },
+            watchdog: {
+                required: [
+                    { name: '看门狗配置', description: '正确配置看门狗超时时间', iso: 'Part 6, 7.4.10' }
+                ],
+                optional: [
+                    { name: '窗口看门狗', description: '使用窗口看门狗增加安全性', iso: 'Part 5, 7.4.10' },
+                    { name: '双看门狗', description: '同时使用内部和外部看门狗', iso: 'Part 5, 7.4.10' }
+                ]
+            },
+            cpu: {
+                required: [
+                    { name: 'CPU自检', description: '启动时进行CPU核心自检 (LBIST)', iso: 'Part 6, 7.4.1' },
+                    { name: '程序流监控', description: '使用Eru监控程序执行', iso: 'Part 5, 7.4.9' }
+                ],
+                optional: [
+                    { name: '双核锁步', description: '使用锁步核验证计算正确性', iso: 'Part 5, 7.4.1' }
+                ]
+            },
+            ram: {
+                required: [
+                    { name: 'RAM ECC', description: '启用RAM错误校正码', iso: 'Part 5, 7.4.2' }
+                ],
+                optional: [
+                    { name: 'MBIST', description: '定期进行内存自检', iso: 'Part 6, 7.4.2' }
+                ]
+            },
+            flash: {
+                required: [
+                    { name: 'Flash ECC', description: '启用Flash错误校正码', iso: 'Part 5, 7.4.2' },
+                    { name: '配置区保护', description: '保护关键配置区域', iso: 'Part 6, 7.4.2' }
+                ],
+                optional: [
+                    { name: 'Readback', description: '读取验证写入数据', iso: 'Part 5, 7.4.2' }
+                ]
+            },
+            can: {
+                required: [
+                    { name: 'CRC校验', description: '启用CAN报文的CRC校验', iso: 'Part 6, 7.4.7' },
+                    { name: '超时监测', description: '监控接收超时', iso: 'Part 5, 7.4.7' }
+                ],
+                optional: [
+                    { name: '报文冗余', description: '关键报文使用双通道', iso: 'Part 5, 7.4.7' }
+                ]
+            },
+            clock: {
+                required: [
+                    { name: '时钟监控', description: '监控时钟失效', iso: 'Part 5, 7.4.6' },
+                    { name: 'PLL自检', description: '启动时验证PLL功能', iso: 'Part 6, 7.4.6' }
+                ],
+                optional: [
+                    { name: '时钟冗余', description: '使用双时钟源', iso: 'Part 5, 7.4.6' }
+                ]
+            }
+        };
+
+        function generateRecommendation() {
+            const asil = document.getElementById('asilLevel').value;
+            const checkboxes = document.querySelectorAll('.peripheral-checkbox:checked');
+            const selected = Array.from(checkboxes).map(cb => cb.value);
+
+            if (!asil) {
+                alert('请选择 ASIL 等级');
+                return;
+            }
+            if (selected.length === 0) {
+                alert('请选择至少一个外设资源');
+                return;
+            }
+
+            // 收集所有机制
+            let required = [];
+            let optional = [];
+
+            selected.forEach(p => {
+                if (mechanismData[p]) {
+                    required = required.concat(mechanismData[p].required);
+                    optional = optional.concat(mechanismData[p].optional);
+                }
+            });
+
+            // 去重
+            required = [...new Map(required.map(m => [m.name, m])).values()];
+            optional = [...new Map(optional.map(m => [m.name, m])).values()];
+
+            // 显示结果
+            document.getElementById('results').classList.remove('hidden');
+
+            // 渲染必需机制
+            document.getElementById('requiredList').innerHTML = required.map(m => `
+                <div class="flex items-start p-3 bg-red-50 rounded-lg">
+                    <span class="text-red-500 font-bold mr-3">🔴</span>
+                    <div>
+                        <span class="font-medium">${m.name}</span>
+                        <p class="text-sm text-gray-600">${m.description}</p>
+                        <span class="text-xs text-gray-400">ISO 26262: ${m.iso}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // 渲染可选机制
+            document.getElementById('optionalList').innerHTML = optional.map(m => `
+                <div class="flex items-start p-3 bg-yellow-50 rounded-lg">
+                    <span class="text-yellow-500 font-bold mr-3">🟡</span>
+                    <div>
+                        <span class="font-medium">${m.name}</span>
+                        <p class="text-sm text-gray-600">${m.description}</p>
+                        <span class="text-xs text-gray-400">ISO 26262: ${m.iso}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // 生成代码模板
+            const code = `/* ASIL ${asil} 安全机制配置 - 自动化生成 */
+#include "Mcu_Ip.h"
+#include "Wdg_Ip.h"
+#include "Adc_Ip.h"
+
+/* ADC 安全配置 */
+void Adc_SafetyConfig(void) {
+    /* ADC 自检 */
+    Adc_Ip_SetSelfTest(ADC_CHANNEL_0, TRUE);
+    
+    /* 启用通道冗余 */
+    #if defined(ADC_DUAL_CHANNEL_MODE)
+    Adc_Ip_SetDualChannelMode(ADC_CHANNEL_0, ADC_CHANNEL_1);
+    #endif
+    
+    /* 范围检查 */
+    Adc_Ip_SetLimitCheck(ADC_CHANNEL_0, 0, 4095);
+}
+
+/* 看门狗配置 */
+void Wdg_SafetyConfig(void) {
+    /* 窗口看门狗 */
+    Wdg_Ip_Init(&Wdg_Config);
+    Wdg_Ip_SetWindow(WDG_INSTANCE, 50, 100); /* 50-100ms 窗口 */
+}
+
+/* CPU 自检 */
+void Cpu_SafetyConfig(void) {
+    /* LBIST */
+    Mcu_Ip_SetLBIST(MCU_LBIST_NORMAL);
+    
+    /* 运行时自检 */
+    Mcu_Ip_SetPeriodicSelfTest(100); /* 100ms 周期 */
+}
+
+int main(void) {
+    /* ASIL ${asil} 安全机制初始化 */
+    Adc_SafetyConfig();
+    Wdg_SafetyConfig();
+    Cpu_SafetyConfig();
+    
+    while(1) {
+        /* 主循环 */
+    }
+}`;
+            document.getElementById('codeTemplate').innerHTML = `<code>${code}</code>`;
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeTemplate').textContent;
+            navigator.clipboard.writeText(code);
+            alert('代码已复制到剪贴板');
+        }
+    </script>
+</body>
+</html>

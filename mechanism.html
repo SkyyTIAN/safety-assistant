@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全机制 | 功能安全专家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-xl font-bold">安全机制详解</h1>
+                        <p class="text-xs text-blue-200">机制原理、配置与诊断覆盖率</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-white/90 hover:text-white">首页</a>
+                    <a href="chip.html" class="text-white/90 hover:text-white">芯片查询</a>
+                    <a href="architecture.html" class="text-white/90 hover:text-white">架构设计</a>
+                    <a href="mechanism.html" class="text-white font-medium">安全机制</a>
+                    <a href="glossary.html" class="text-white/90 hover:text-white">术语库</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Search -->
+        <div class="mb-8">
+            <div class="flex space-x-4">
+                <input type="text" id="mechanismSearch" placeholder="搜索安全机制 (如: LBIST, MBIST, 看门狗)" 
+                    class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="searchMechanism()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                    🔍 搜索
+                </button>
+            </div>
+        </div>
+
+        <!-- Mechanism List -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="mechanismGrid">
+            <!-- LBIST -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('lbist')">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">CPU</span>
+                </div>
+                <h3 class="text-lg font-semibold">LBIST</h3>
+                <p class="text-gray-500 text-sm mt-1">逻辑内建自检</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">诊断覆盖率</span>
+                        <span class="font-medium text-green-600">≥90%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MBIST -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('mbist')">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded font-medium">内存</span>
+                </div>
+                <h3 class="text-lg font-semibold">MBIST</h3>
+                <p class="text-gray-500 text-sm mt-1">内存内建自检</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">诊断覆盖率</span>
+                        <span class="font-medium text-green-600">≥95%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PMBIST -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('pmbist')">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded font-medium">内存</span>
+                </div>
+                <h3 class="text-lg font-semibold">PMBIST</h3>
+                <p class="text-gray-500 text-sm mt-1">电源管理内存自检</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">诊断覆盖率</span>
+                        <span class="font-medium text-green-600">≥95%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 看门狗 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('watchdog')">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded font-medium">监控</span>
+                </div>
+                <h3 class="text-lg font-semibold">看门狗</h3>
+                <p class="text-gray-500 text-sm mt-1">窗口看门狗/独立看门狗</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">诊断覆盖率</span>
+                        <span class="font-medium text-green-600">90-99%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ECC -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('ecc')">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded font-medium">存储</span>
+                </div>
+                <h3 class="text-lg font-semibold">ECC</h3>
+                <p class="text-gray-500 text-sm mt-1">错误校正码</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">诊断覆盖率</span>
+                        <span class="font-medium text-green-600">单比特100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CPU自检 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showMechanism('cputest')">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">CPU</span>
+                </div>
+                <h3 class="text-lg font-semibold">CPU自检</h3>
+                <p class="text-gray-500 text-sm mt-1">处理器核心自检</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">诊断覆盖率</span>
+                        <span class="font-medium text-green-600">90-99%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mechanism Detail Modal -->
+    <div id="mechanismModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 id="modalTitle" class="text-2xl font-bold">机制名称</h2>
+                        <p id="modalSubtitle" class="text-gray-500">机制分类</p>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="modalContent" class="p-6">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mechanismDetail = {
+            lbist: {
+                name: 'LBIST (Logic Built-In Self-Test)',
+                category: 'CPU安全机制',
+                description: '逻辑内建自检是一种在芯片内部集成的自检功能，用于检测CPU逻辑单元的失效。通过在芯片内部生成测试向量并比较预期结果，可以检测出逻辑电路中的单点失效和双点失效。',
+                working: [
+                    '1. 启动时触发LBIST',
+                    '2. 内部测试向量发生器产生伪随机测试序列',
+                    '3. 测试序列施加到CPU核心逻辑',
+                    '4. 响应分析器捕获输出并与预期结果比对',
+                    '5. 生成PASS/FAIL报告'
+                ],
+                config: [
+                    'Mc_Me_SetMode(ME_MODE_LBIST); // 进入LBIST模式',
+                    'Scu_Lbist_Init(&Scu_LbistConfig); // 配置LBIST参数',
+                    'Mc_Me_StartLBIST(); // 启动LBIST',
+                    '// 等待LBIST完成',
+                    'while(Scu_Lbist_GetStatus() != LBIST_DONE);'
+                ],
+                dc: {
+                    low: '60-90% (简化配置)',
+                    medium: '90-95% (标准配置)',
+                    high: '≥95% (增强配置 + 周期性运行)'
+                },
+                impact: '取消LBIST将导致CPU逻辑失效无法检测，可能导致错误计算结果，可能引发安全功能失效。',
+                iso: 'ISO 26262 Part 6, 7.4.1'
+            },
+            watchdog: {
+                name: '看门狗 (Watchdog)',
+                category: '监控机制',
+                description: '看门狗是一种定时器机制，用于检测软件死循环或死锁。当软件停止喂狗时，看门狗超时将触发系统复位或进入安全状态。',
+                working: [
+                    '1. 看门狗初始化',
+                    '2. 软件在正常任务中定期喂狗',
+                    '3. 如果软件死循环，超时发生',
+                    '4. 触发安全机制：复位/进入安全状态',
+                    '5. 记录错误日志'
+                ],
+                config: [
+                    'Wdg_Supply_Init(&Wdg_Config); // 初始化看门狗',
+                    'Wdg_SetWindow(50, 100); // 设置50-100ms窗口',
+                    'Wdg_Enable(); // 启用看门狗',
+                    '// 主循环中',
+                    'Wdg_Feed(); // 喂狗'
+                ],
+                dc: {
+                    low: '60-90% (标准看门狗)',
+                    medium: '90-95% (窗口看门狗)',
+                    high: '≥95% (双看门狗 + 任务监控)'
+                },
+                impact: '取消看门狗将导致软件死循环无法检测，系统可能卡死导致安全功能完全失效。',
+                iso: 'ISO 26262 Part 6, 7.4.10'
+            },
+            mbist: {
+                name: 'MBIST (Memory Built-In Self-Test)',
+                category: '内存安全机制',
+                description: '内存内建自检用于检测RAM和Flash中的物理失效，包括位翻转、桥连、开路等故障模式。',
+                working: [
+                    '1. 配置MBIST控制器',
+                    '2. 选择测试算法(March, MATSIG, etc.)',
+                    '3. 执行测试',
+                    '4. 分析失败地址',
+                    '5. 报告结果'
+                ],
+                config: [
+                    'Mcu_Mbist_Init(&Mbist_Config);',
+                    'Mcu_Mbist_SetAlgorithm(MBIST_MARCH);',
+                    'Mcu_Mbist_Execute(RAM_START, RAM_END);',
+                    'if (Mcu_Mbist_GetResult() == MBIST_FAIL) {',
+                    '    // 处理失效'
+                ],
+                dc: {
+                    low: '70-85% (简单March测试)',
+                    medium: '85-95% (多种算法组合)',
+                    high: '≥95% (全算法 + 运行时监控)'
+                },
+                impact: '取消MBIST将无法检测内存失效，可能导致错误数据使用，引发不安全控制输出。',
+                iso: 'ISO 26262 Part 6, 7.4.2'
+            },
+            ecc: {
+                name: 'ECC (Error Correction Code)',
+                category: '存储安全机制',
+                description: 'ECC通过添加冗余校验位来检测和纠正内存中的单比特错误，同时检测双比特错误。',
+                working: [
+                    '1. 写入数据时计算ECC校验位',
+                    '2. 存储数据和校验位',
+                    '3. 读取时重新计算ECC',
+                    '4. 比对校验位',
+                    '5. 纠正单比特错误 / 报告双比特错误'
+                ],
+                config: [
+                    '// RAM配置',
+                    'Mcu_EnableRamEcc(RAM_INSTANCE);',
+                    '// Flash配置', 
+                    'Mcu_EnableFlashEcc(FLASH_INSTANCE);',
+                    '// 错误处理回调',
+                    'Mcu_RegisterEccErrorCallback(Ecc_Error_Handler);'
+                ],
+                dc: {
+                    low: '单比特错误: 100% (可纠正)',
+                    medium: '双比特错误: 100% (可检测)',
+                    high: '更多错误: 取决于配置'
+                },
+                impact: '取消ECC将无法检测内存软错误，在高辐射或高温环境下可能产生不安全数据。',
+                iso: 'ISO 26262 Part 6, 7.4.2'
+            }
+        };
+
+        function showMechanism(mechId) {
+            const mech = mechanismDetail[mechId];
+            if (!mech) return;
+
+            document.getElementById('modalTitle').textContent = mech.name;
+            document.getElementById('modalSubtitle').textContent = mech.category;
+
+            let content = `
+                <div class="space-y-6">
+                    <!-- 描述 -->
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">📖 工作原理</h4>
+                        <p class="text-gray-700">${mech.description}</p>
+                    </div>
+
+                    <!-- 工作步骤 -->
+                    <div>
+                        <h4 class="font-semibold mb-3">⚙️ 工作流程</h4>
+                        <ol class="space-y-2">
+                            ${mech.working.map((step, i) => `
+                                <li class="flex items-start">
+                                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">${i+1}</span>
+                                    <span class="text-gray-700">${step.replace(/^\d+\.\s*/, '')}</span>
+                                </li>
+                            `).join('')}
+                        </ol>
+                    </div>
+
+                    <!-- 配置代码 -->
+                    <div>
+                        <h4 class="font-semibold mb-3">💻 配置示例</h4>
+                        <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>${mech.config.join('\n')}</code></pre>
+                    </div>
+
+                    <!-- 诊断覆盖率 -->
+                    <div>
+                        <h4 class="font-semibold mb-3">📊 诊断覆盖率</h4>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="bg-yellow-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-500">低配置</div>
+                                <div class="text-lg font-bold text-yellow-600">${mech.dc.low}</div>
+                            </div>
+                            <div class="bg-green-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-500">中配置</div>
+                                <div class="text-lg font-bold text-green-600">${mech.dc.medium}</div>
+                            </div>
+                            <div class="bg-blue-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-500">高配置</div>
+                                <div class="text-lg font-bold text-blue-600">${mech.dc.high}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 影响分析 -->
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-red-700">⚠️ 取消影响</h4>
+                        <p class="text-gray-700">${mech.impact}</p>
+                    </div>
+
+                    <!-- ISO 条款 -->
+                    <div>
+                        <h4 class="font-semibold mb-2">📚 ISO 26262 条款</h4>
+                        <span class="px-3 py-1 bg-gray-100 rounded-full text-sm">${mech.iso}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('mechanismModal').classList.remove('hidden');
+            document.getElementById('mechanismModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('mechanismModal').classList.add('hidden');
+            document.getElementById('mechanismModal').classList.remove('flex');
+        }
+
+        function searchMechanism() {
+            const query = document.getElementById('mechanismSearch').value.toLowerCase();
+            if (query.includes('lbist')) showMechanism('lbist');
+            else if (query.includes('mbist') || query.includes('内存')) showMechanism('mbist');
+            else if (query.includes('看门狗') || query.includes('watchdog')) showMechanism('watchdog');
+            else if (query.includes('ecc')) showMechanism('ecc');
+            else if (query.includes('cpu')) showMechanism('cputest');
+            else alert('未找到该安全机制');
+        }
+    </script>
+</body>
+</html>

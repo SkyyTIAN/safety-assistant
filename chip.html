@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>芯片查询 | 功能安全专家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-xl font-bold">芯片查询</h1>
+                        <p class="text-xs text-blue-200">MCU/SBC 功能安全参数</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-white/90 hover:text-white">首页</a>
+                    <a href="chip.html" class="text-white font-medium">芯片查询</a>
+                    <a href="architecture.html" class="text-white/90 hover:text-white">架构设计</a>
+                    <a href="mechanism.html" class="text-white/90 hover:text-white">安全机制</a>
+                    <a href="glossary.html" class="text-white/90 hover:text-white">术语库</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Search -->
+        <div class="mb-8">
+            <div class="flex space-x-4">
+                <input type="text" id="chipSearch" placeholder="输入芯片型号搜索 (如: TC377, TLF35584, FS6500)" 
+                    class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="searchChip()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                    🔍 搜索
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium">全部</button>
+            <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">MCU</button>
+            <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">SBC</button>
+            <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">传感器</button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- TC377 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('tc377')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded font-medium">MCU</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">AURIX TC377</h3>
+                <p class="text-gray-500 text-sm mt-1">Infineon</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">ASIL:</span>
+                            <span class="font-medium">D</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">工艺:</span>
+                            <span class="font-medium">40nm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TLF35584 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('tlf35584')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded font-medium">SBC</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">TLF35584</h3>
+                <p class="text-gray-500 text-sm mt-1">Infineon</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">ASIL:</span>
+                            <span class="font-medium">D</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">功能:</span>
+                            <span class="font-medium">电源+监控</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FS6500 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('fs6500')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded font-medium">SBC</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">FS6500</h3>
+                <p class="text-gray-500 text-sm mt-1">NXP</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">ASIL:</span>
+                            <span class="font-medium">D</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">功能:</span>
+                            <span class="font-medium">PMIC</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAFETRAC 3922 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('3922')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded font-medium">MCU</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">SAFETRAC 3922</h3>
+                <p class="text-gray-500 text-sm mt-1">NXP</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">ASIL:</span>
+                            <span class="font-medium">D</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">应用:</span>
+                            <span class="font-medium">安全控制</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAS414x -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('tas414x')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded font-medium">SBC</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">TAS414x</h3>
+                <p class="text-gray-500 text-sm mt-1">Infineon</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">ASIL:</span>
+                            <span class="font-medium">D</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">功能:</span>
+                            <span class="font-medium">功率级</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chip Detail Modal -->
+    <div id="chipModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 id="modalTitle" class="text-2xl font-bold">芯片详情</h2>
+                        <p id="modalSubtitle" class="text-gray-500">芯片描述</p>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="modalContent" class="p-6">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chipData = {
+            tc377: {
+                name: 'AURIX TC377',
+                vendor: 'Infineon',
+                type: 'MCU',
+                asil: 'D',
+                process: '40nm',
+                cores: '3x TriCore',
+                frequency: '300MHz',
+                safety: {
+                    mechanisms: ['LBIST', 'MBIST', 'PMBIST', 'CPU自检', '内存ECC', '时钟监控', '电压监控'],
+                    coverage: '99%',
+                    fit: '10 FIT'
+                },
+                peripherals: ['ADC', 'PWM', 'GPT', 'SPI', 'I2C', 'CAN', 'Ethernet']
+            },
+            tlf35584: {
+                name: 'TLF35584',
+                vendor: 'Infineon',
+                type: 'SBC',
+                asil: 'D',
+                features: '电源管理 + 看门狗 + 安全状态控制',
+                safety: {
+                    mechanisms: ['QWDT', 'SWDT', 'PMU', '供电监控', '温度监控', '失效安全输出'],
+                    coverage: '99%',
+                    fit: '15 FIT'
+                },
+                documents: ['Datasheet', 'Safety Manual', 'Application Notes']
+            },
+            fs6500: {
+                name: 'FS6500',
+                vendor: 'NXP',
+                type: 'SBC',
+                asil: 'D',
+                features: 'PMIC + CAN/LIN 收发器',
+                safety: {
+                    mechanisms: ['看门狗', '失效检测', '电压监控', '温度保护'],
+                    coverage: '97%',
+                    fit: '20 FIT'
+                },
+                documents: ['Datasheet', 'Safety Manual', 'FMEDA']
+            }
+        };
+
+        function showChipDetail(chipId) {
+            const chip = chipData[chipId];
+            if (!chip) return;
+
+            document.getElementById('modalTitle').textContent = chip.name;
+            document.getElementById('modalSubtitle').textContent = chip.vendor + ' | ' + chip.type;
+
+            let content = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-gray-500 text-sm">ASIL 等级</span>
+                            <p class="text-2xl font-bold text-green-600">${chip.asil}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-gray-500 text-sm">工艺</span>
+                            <p class="text-2xl font-bold">${chip.process || 'N/A'}</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3">🔒 安全机制</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${chip.safety.mechanisms.map(m => `<span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">${m}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <span class="text-gray-500 text-sm">诊断覆盖率</span>
+                            <p class="text-xl font-bold text-green-600">${chip.safety.coverage}</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <span class="text-gray-500 text-sm">FIT 值</span>
+                            <p class="text-xl font-bold text-red-600">${chip.safety.fit}</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3">📦 外设资源</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${(chip.peripherals || chip.documents || []).map(p => `<span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">${p}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('chipModal').class.remove('hidden');
+            document.getElementById('chipModal').class.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('chipModal').class.add('hidden');
+            document.getElementById('chipModal').class.remove('flex');
+        }
+
+        function searchChip() {
+            const query = document.getElementById('chipSearch').value.toLowerCase();
+            if (query) {
+                // 模拟搜索
+                alert('搜索: ' + query + '\n\n功能开发中...');
+            }
+        }
+    </script>
+</body>
+</html>

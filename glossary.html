@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>术语库 | 功能安全专家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-xl font-bold">术语库</h1>
+                        <p class="text-xs text-blue-200">功能安全常用术语</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-white/90 hover:text-white">首页</a>
+                    <a href="chip.html" class="text-white/90 hover:text-white">芯片查询</a>
+                    <a href="architecture.html" class="text-white/90 hover:text-white">架构设计</a>
+                    <a href="mechanism.html" class="text-white/90 hover:text-white">安全机制</a>
+                    <a href="glossary.html" class="text-white font-medium">术语库</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Search -->
+        <div class="mb-8">
+            <div class="flex space-x-4">
+                <input type="text" id="termSearch" placeholder="搜索术语 (如: ASIL, FIT, HARA, FMEA)" 
+                    class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="searchTerm()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                    🔍 搜索
+                </button>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="filterTerm('all')" class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium">全部</button>
+            <button onclick="filterTerm('safety')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">安全概念</button>
+            <button onclick="filterTerm('analysis')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">分析方法</button>
+            <button onclick="filterTerm('chip')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">芯片术语</button>
+        </div>
+
+        <!-- Term List -->
+        <div class="space-y-4" id="termList">
+            <!-- ASIL -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="safety">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">ASIL</h3>
+                        <p class="text-sm text-gray-500 mb-2">Automotive Safety Integrity Level</p>
+                    </div>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">安全概念</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    汽车安全完整性等级，是ISO 26262标准中定义的功能安全风险分类等级。分为4级：ASIL A（最低）到ASIL D（最高），其中ASIL D对安全要求最严格。
+                </p>
+                <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">
+                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">ASIL A</span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded">ASIL B</span>
+                    <span class="px-2 py-1 bg-orange-100 text-orange-600 text-xs rounded">ASIL C</span>
+                    <span class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded">ASIL D</span>
+                </div>
+            </div>
+
+            <!-- FIT -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="chip">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">FIT</h3>
+                        <p class="text-sm text-gray-500 mb-2">Failure In Time</p>
+                    </div>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">芯片术语</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    失效率单位，表示每十亿小时（10⁹小时）的失效次数。1 FIT = 1次失效/10⁹小时。例如：10 FIT表示每十亿小时平均发生10次失效。
+                </p>
+            </div>
+
+            <!-- HARA -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="analysis">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">HARA</h3>
+                        <p class="text-sm text-gray-500 mb-2">Hazard Analysis and Risk Assessment</p>
+                    </div>
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">分析方法</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    危害分析和风险评估，是功能安全开发的第一步。通过识别潜在危害、评估风险等级、确定安全目标，从而推导出安全需求。
+                </p>
+            </div>
+
+            <!-- FMEA -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="analysis">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">FMEA</h3>
+                        <p class="text-sm text-gray-500 mb-2">Failure Mode and Effects Analysis</p>
+                    </div>
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">分析方法</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    失效模式与影响分析，是一种系统性的分析方法，用于识别潜在的失效模式、评估其影响，并制定改进措施。分为DFMEA（设计）和FMEA（过程）。
+                </p>
+            </div>
+
+            <!-- DC -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="safety">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">DC</h3>
+                        <p class="text-sm text-gray-500 mb-2">Diagnostic Coverage</p>
+                    </div>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">安全概念</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    诊断覆盖率，表示安全机制能够检测到的失效占总失效的比例。通常分为：低(60-90%)、中(90-97%)、高(>97%)三个等级。DC是计算SPFM和LFM的关键参数。
+                </p>
+            </div>
+
+            <!-- SPFM -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="safety">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">SPFM</h3>
+                        <p class="text-sm text-gray-500 mb-2">Single-Point Fault Metric</p>
+                    </div>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">安全概念</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    单点故障度量，表示单点故障被安全机制覆盖的比例。计算公式：SPFM = 1 - (λ_SPFM / λ_total)。ASIL B要求≥60%，ASIL C≥70%，ASIL D≥90%。
+                </p>
+            </div>
+
+            <!-- LFM -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="safety">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">LFM</h3>
+                        <p class="text-sm text-gray-500 mb-2">Latent Fault Metric</p>
+                    </div>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">安全概念</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    潜在故障度量，表示潜伏故障被安全机制覆盖的比例。潜伏故障是指无法被检测也不会立即导致故障的失效。ASIL B/C要求≥60%，ASIL D≥80%。
+                </p>
+            </div>
+
+            <!-- SBC -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="chip">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">SBC</h3>
+                        <p class="text-sm text-gray-500 mb-2">System Basic Chip / System Basis Chip</p>
+                    </div>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">芯片术语</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    系统基础芯片，是汽车电子中常用的电源管理和监控芯片。SBC通常集成供电、 看门狗、安全状态控制等功能，是功能安全系统的重要组成部分。
+                </p>
+            </div>
+
+            <!-- MCU -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="chip">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">MCU</h3>
+                        <p class="text-sm text-gray-500 mb-2">Microcontroller Unit</p>
+                    </div>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">芯片术语</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    微控制器单元，是汽车电子控制系统的核心。功能安全系统中使用的MCU通常需要具备硬件安全特性，如锁步核、内存ECC、看门狗等。
+                </p>
+            </div>
+
+            <!-- LBIST -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="chip">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">LBIST</h3>
+                        <p class="text-sm text-gray-500 mb-2">Logic Built-In Self-Test</p>
+                    </div>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">芯片术语</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    逻辑内建自检，是一种CPU逻辑自检机制。通过内部测试向量检测CPU逻辑单元的失效，提供高诊断覆盖率（通常>90%）。
+                </p>
+            </div>
+
+            <!-- MBIST -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="chip">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">MBIST</h3>
+                        <p class="text-sm text-gray-500 mb-2">Memory Built-In Self-Test</p>
+                    </div>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">芯片术语</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    内存内建自检，用于检测RAM/Flash中的物理失效。常见算法包括March测试、ATPG等，可提供>95%的诊断覆盖率。
+                </p>
+            </div>
+
+            <!-- FTA -->
+            <div class="bg-white rounded-xl shadow-sm p-6" data-category="analysis">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600">FTA</h3>
+                        <p class="text-sm text-gray-500 mb-2">Fault Tree Analysis</p>
+                    </div>
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded">分析方法</span>
+                </div>
+                <p class="text-gray-700 mt-3">
+                    故障树分析，是一种自顶向下的分析方法。从顶事件（不希望发生的事件）出发，通过逻辑门（与、或）分析导致顶事件的各种原因。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function searchTerm() {
+            const query = document.getElementById('termSearch').value.toLowerCase();
+            if (!query) return;
+            
+            const terms = document.querySelectorAll('#termList > div');
+            terms.forEach(term => {
+                const text = term.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    term.style.display = 'block';
+                } else {
+                    term.style.display = 'none';
+                }
+            });
+        }
+
+        function filterTerm(category) {
+            const terms = document.querySelectorAll('#termList > div');
+            terms.forEach(term => {
+                if (category === 'all' || term.dataset.category === category) {
+                    term.style.display = 'block';
+                } else {
+                    term.style.display = 'none';
+                }
+            });
+        }
+
+        // 回车搜索
+        document.getElementById('termSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchTerm();
+        });
+    </script>
+</body>
+</html>
