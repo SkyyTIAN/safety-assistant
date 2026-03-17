@@ -39,6 +39,29 @@
     </header>
 
     <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- 外设说明弹窗 -->
+        <div id="peripheralModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 id="modalTitle" class="text-2xl font-bold">外设名称</h2>
+                            <p id="modalSubtitle" class="text-gray-500">模块分类</p>
+                        </div>
+                        <button onclick="closePeripheralModal()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="modalContent" class="p-6">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+        </div>
+
         <!-- Input Section -->
         <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
             <h3 class="text-lg font-semibold mb-4">📥 输入系统架构</h3>
@@ -71,40 +94,134 @@
 
             <!-- Peripherals -->
             <div class="mt-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">使用的外设资源 (多选)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">使用的外设资源 (多选，点击❓查看说明)</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="adc" class="peripheral-checkbox">
-                        <span>ADC 采样</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="pwm" class="peripheral-checkbox">
-                        <span>PWM 控制</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="watchdog" class="peripheral-checkbox">
-                        <span>看门狗</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="cpu" class="peripheral-checkbox">
-                        <span>CPU</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="ram" class="peripheral-checkbox">
-                        <span>RAM</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="flash" class="peripheral-checkbox">
-                        <span>Flash</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="can" class="peripheral-checkbox">
-                        <span>CAN通信</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="checkbox" value="clock" class="peripheral-checkbox">
-                        <span>时钟</span>
-                    </label>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="cpu" class="peripheral-checkbox">
+                            <span>CPU</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('cpu')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="ram" class="peripheral-checkbox">
+                            <span>RAM</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('ram')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="flash" class="peripheral-checkbox">
+                            <span>Flash</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('flash')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="adc" class="peripheral-checkbox">
+                            <span>ADC</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('adc')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="pwm" class="peripheral-checkbox">
+                            <span>PWM</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('pwm')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="gtm" class="peripheral-checkbox">
+                            <span>GTM</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('gtm')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="watchdog" class="peripheral-checkbox">
+                            <span>看门狗</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('watchdog')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="clock" class="peripheral-checkbox">
+                            <span>时钟</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('clock')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="can" class="peripheral-checkbox">
+                            <span>CAN</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('can')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="flexray" class="peripheral-checkbox">
+                            <span>FlexRay</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('flexray')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="ethernet" class="peripheral-checkbox">
+                            <span>Ethernet</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('ethernet')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="spi" class="peripheral-checkbox">
+                            <span>SPI</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('spi')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="i2c" class="peripheral-checkbox">
+                            <span>I2C</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('i2c')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="dma" class="peripheral-checkbox">
+                            <span>DMA</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('dma')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="interrupt" class="peripheral-checkbox">
+                            <span>中断</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('interrupt')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="voltage" class="peripheral-checkbox">
+                            <span>电压监测</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('voltage')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="temperature" class="peripheral-checkbox">
+                            <span>温度监测</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('temperature')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="port" class="peripheral-checkbox">
+                            <span>IO端口</span>
+                        </label>
+                        <button onclick="showPeripheralInfo('port')" class="text-gray-400 hover:text-blue-500">❓</button>
+                    </div>
                 </div>
             </div>
 
@@ -151,80 +268,508 @@
     </div>
 
     <script>
+        // 外设说明数据
+        const peripheralInfo = {
+            cpu: {
+                name: 'CPU (中央处理器)',
+                category: '核心处理器',
+                what: 'CPU是MCU的大脑，负责执行程序指令和控制所有外设。在汽车MCU中，通常是多核架构（如AURIX的TriCore）。',
+                usage: '几乎所有汽车电子控制项目都会使用CPU，包括发动机控制、变速箱控制、车身控制等。'
+            },
+            ram: {
+                name: 'RAM (随机存取存储器)',
+                category: '存储器',
+                what: 'RAM是易失性存储器，用于存储程序运行时的临时数据（变量、堆栈等）。汽车MCU通常集成SRAM。',
+                usage: '存储程序运行的中间数据，如传感器采样值、算法中间结果，通信缓冲区等。'
+            },
+            flash: {
+                name: 'Flash (闪存)',
+                category: '存储器',
+                what: 'Flash是非易失性存储器，用于存储程序代码和常量数据。汽车MCU的Flash通常支持ECC保护。',
+                usage: '存储程序代码，校准数据、配置参数等断电需要保存的数据。'
+            },
+            adc: {
+                name: 'ADC (模数转换器)',
+                category: '模拟外设',
+                what: 'ADC将模拟信号（电压、电流）转换为数字值。是传感器信号采集的核心模块。',
+                usage: '采集传感器信号：温度传感器、压力传感器、位置传感器、电流检测等。'
+            },
+            pwm: {
+                name: 'PWM (脉宽调制)',
+                category: '控制外设',
+                what: 'PWM通过调节脉冲宽度来控制输出信号的平均值。常用于电机控制、LED调光、功率开关控制。',
+                usage: '电机控制（直流电机、无刷电机）、PWM逆变器控制、LED亮度调节、蜂鸣器驱动。'
+            },
+            gtm: {
+                name: 'GTM (通用定时器模块)',
+                category: '定时器',
+                what: 'GTM是高级定时器模块，用于精确时序控制。比普通PWM更强大，支持多路复杂输出模式。',
+                usage: '无刷电机控制(BLDC/PMSM)、发动机喷油控制，多路PWM协同控制、时序产生。'
+            },
+            watchdog: {
+                name: '看门狗',
+                category: '安全监控',
+                what: '看门狗是一个定时器，如果软件停止喂狗（定期复位计时器），超时后触发系统复位。防止软件死循环。',
+                usage: '监控软件运行状态、检测死循环/死锁，系统故障恢复。'
+            },
+            clock: {
+                name: '时钟系统',
+                category: '基础外设',
+                what: '时钟系统提供MCU工作的时钟信号，是所有外设工作的基准。汽车MCU通常有PLL倍频功能。',
+                usage: '为CPU、外设、通信模块提供时钟源。'
+            },
+            can: {
+                name: 'CAN (控制器局域网)',
+                category: '通信外设',
+                what: 'CAN是汽车行业最常用的通信协议，支持多主站广播通信，有错误检测机制。',
+                usage: '汽车网络通信：动力总成、底盘、车身各ECU之间的通信。'
+            },
+            flexray: {
+                name: 'FlexRay',
+                category: '通信外设',
+                what: 'FlexRay是一种高速、确定性通信协议，支持双通道冗余，比CAN更快更可靠。',
+                usage: '需要高速和确定性的安全相关应用，如线控转向、制动系统。'
+            },
+            ethernet: {
+                name: 'Ethernet (以太网)',
+                category: '通信外设',
+                what: '车载以太网是新一代高速通信协议，支持100Mbps以上速率，用于域控制器间通信。',
+                usage: '车载娱乐系统、域控制器间通信(中央网关)、自动驾驶感知数据传输。'
+            },
+            spi: {
+                name: 'SPI (串行外设接口)',
+                category: '通信外设',
+                what: 'SPI是高速同步串行通信协议，常用于MCU与外设芯片之间的通信。',
+                usage: '连接外部传感器(加速度计、陀螺仪)、通信收发器、存储器、显示屏等。'
+            },
+            i2c: {
+                name: 'I2C (集成电路互连)',
+                category: '通信外设',
+                what: 'I2C是双线制的同步串行通信协议，节省引脚，支持多主站。',
+                usage: '连接EEPROM、传感器(温湿度、压力)、RTC实时时钟、IO扩展器等。'
+            },
+            dma: {
+                name: 'DMA (直接内存访问)',
+                category: '数据传输',
+                what: 'DMA可以在不占用CPU的情况下，直接在内存和外设之间传输数据。',
+                usage: '批量数据传输：ADC采样数据搬移、内存到内存拷贝、通信数据收发。减少CPU负担，提高实时性。'
+            },
+            interrupt: {
+                name: '中断系统',
+                category: '事件处理',
+                what: '中断是CPU响应外设事件的机制，当外设发生事件时，CPU暂停当前任务去处理中断。',
+                usage: '几乎所有实时响应场景：传感器数据到达、通信接收完成、定时器到时、外部触发等。'
+            },
+            voltage: {
+                name: '电压监测',
+                category: '安全监控',
+                what: '电压监测模块监控MCU供电电压，防止欠压或过压导致MCU工作异常。',
+                usage: '监测MCU核心电压、供电电压稳定性检测、电池电压监测。'
+            },
+            temperature: {
+                name: '温度监测',
+                category: '安全监控',
+                what: '温度监测模块监测芯片温度，防止过热导致功能失效或损坏。',
+                usage: '芯片过温保护、环境温度监测、热管理。'
+            },
+            port: {
+                name: 'IO端口',
+                category: '基础外设',
+                what: 'IO端口是MCU与外部世界交互的引脚，可以配置为输入或输出。',
+                usage: '读取按键/开关状态，控制LED/继电器、信号输入输出、芯片间通信。'
+            }
+        };
+
         const mechanismData = {
             adc: {
-                required: [
+                // ASIL A: 无强制要求，通过开发流程保证
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证ADC功能正常', iso: 'Part 6' }
+                ],
+                // ASIL B: 基本自检
+                asilB: [
                     { name: 'ADC自检', description: '启动时进行ADC功能自检', iso: 'Part 6, 7.4.2' },
-                    { name: '通道冗余', description: '使用双通道ADC进行冗余采样', iso: 'Part 5, 7.4.3' }
+                    { name: '范围检查', description: '采样值范围监控', iso: 'Part 5, 7.4.4' }
+                ],
+                // ASIL C: 增强检测
+                asilC: [
+                    { name: 'ADC自检', description: '启动时进行ADC功能自检', iso: 'Part 6, 7.4.2' },
+                    { name: '范围检查', description: '采样值范围监控', iso: 'Part 5, 7.4.4' },
+                    { name: '通道冗余(建议)', description: '使用双通道ADC进行冗余采样', iso: 'Part 5, 7.4.3' }
+                ],
+                // ASIL D: 完整安全机制
+                asilD: [
+                    { name: 'ADC自检', description: '启动时进行ADC功能自检', iso: 'Part 6, 7.4.2' },
+                    { name: '通道冗余', description: '使用双通道ADC进行冗余采样', iso: 'Part 5, 7.4.3' },
+                    { name: '范围检查', description: '采样值范围监控', iso: 'Part 5, 7.4.4' }
                 ],
                 optional: [
-                    { name: '周期性自检', description: '运行时周期性触发ADC自检', iso: 'Part 6, 7.4.2' },
-                    { name: '范围检查', description: '采样值范围监控', iso: 'Part 5, 7.4.4' }
+                    { name: '周期性自检', description: '运行时周期性触发ADC自检', iso: 'Part 6, 7.4.2' }
                 ]
             },
             pwm: {
-                required: [
-                    { name: 'PWM输出监控', description: '监控PWM输出引脚状态', iso: 'Part 6, 7.4.5' }
+                asilA: [
+                    { name: 'PWM输出监控', description: '基本PWM引脚状态监控', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'PWM输出监控', description: '监控PWM输出引脚状态', iso: 'Part 6, 7.4.5' },
+                    { name: '占空比检查', description: '验证PWM占空比在合理范围', iso: 'Part 5, 7.4.5' }
+                ],
+                asilC: [
+                    { name: 'PWM输出监控', description: '监控PWM输出引脚状态', iso: 'Part 6, 7.4.5' },
+                    { name: '占空比检查', description: '验证PWM占空比在合理范围', iso: 'Part 5, 7.4.5' },
+                    { name: '死区监控', description: '防止上下管直通', iso: 'Part 5, 7.4.5' }
+                ],
+                asilD: [
+                    { name: 'PWM输出监控', description: '监控PWM输出引脚状态', iso: 'Part 6, 7.4.5' },
+                    { name: '死区监控', description: '防止上下管直通', iso: 'Part 5, 7.4.5' },
+                    { name: '占空比检查', description: '验证PWM占空比在合理范围', iso: 'Part 5, 7.4.5' },
+                    { name: 'PWM冗余输出', description: '关键信号使用冗余PWM输出', iso: 'Part 5, 7.4.5' }
                 ],
                 optional: [
-                    { name: '死区监控', description: '防止上下管直通', iso: 'Part 5, 7.4.5' },
-                    { name: '占空比检查', description: '验证PWM占空比在合理范围', iso: 'Part 5, 7.4.4' }
+                    { name: '输入信号监控', description: '监控PWM输入信号有效性', iso: 'Part 5' }
                 ]
             },
             watchdog: {
-                required: [
-                    { name: '看门狗配置', description: '正确配置看门狗超时时间', iso: 'Part 6, 7.4.10' }
+                asilA: [
+                    { name: '基本看门狗', description: '使用标准看门狗', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '标准看门狗', description: '配置合适的超时时间', iso: 'Part 6, 7.4.10' }
+                ],
+                asilC: [
+                    { name: '窗口看门狗', description: '使用窗口看门狗增加安全性', iso: 'Part 5, 7.4.10' }
+                ],
+                asilD: [
+                    { name: '窗口看门狗', description: '使用窗口看门狗', iso: 'Part 5, 7.4.10' },
+                    { name: '外部看门狗(建议)', description: '增加外部监控，可选', iso: 'Part 5, 7.4.10' },
+                    { name: '任务监控', description: '监控各任务喂狗时序', iso: 'Part 5, 7.4.10' }
                 ],
                 optional: [
-                    { name: '窗口看门狗', description: '使用窗口看门狗增加安全性', iso: 'Part 5, 7.4.10' },
-                    { name: '双看门狗', description: '同时使用内部和外部看门狗', iso: 'Part 5, 7.4.10' }
+                    { name: '双看门狗', description: '内部+外部看门狗，增强安全性', iso: 'Part 5, 7.4.10' }
                 ]
             },
             cpu: {
-                required: [
+                asilA: [
+                    { name: '程序执行验证', description: '通过软件方式进行基本验证', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'CPU自检', description: '启动时进行CPU核心自检 (LBIST)', iso: 'Part 6, 7.4.1' }
+                ],
+                asilC: [
                     { name: 'CPU自检', description: '启动时进行CPU核心自检 (LBIST)', iso: 'Part 6, 7.4.1' },
                     { name: '程序流监控', description: '使用Eru监控程序执行', iso: 'Part 5, 7.4.9' }
                 ],
+                asilD: [
+                    { name: 'CPU自检', description: '启动时进行CPU核心自检 (LBIST)', iso: 'Part 6, 7.4.1' },
+                    { name: '双核锁步', description: '使用锁步核验证计算正确性', iso: 'Part 5, 7.4.1' },
+                    { name: '程序流监控', description: '使用Eru监控程序执行', iso: 'Part 5, 7.4.9' }
+                ],
                 optional: [
-                    { name: '双核锁步', description: '使用锁步核验证计算正确性', iso: 'Part 5, 7.4.1' }
+                    { name: '运行时自检', description: '周期性CPU自检', iso: 'Part 6, 7.4.1' }
                 ]
             },
             ram: {
-                required: [
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证RAM功能', iso: 'Part 6' }
+                ],
+                asilB: [
                     { name: 'RAM ECC', description: '启用RAM错误校正码', iso: 'Part 5, 7.4.2' }
                 ],
-                optional: [
-                    { name: 'MBIST', description: '定期进行内存自检', iso: 'Part 6, 7.4.2' }
-                ]
+                asilC: [
+                    { name: 'RAM ECC', description: '启用RAM错误校正码', iso: 'Part 5, 7.4.2' },
+                    { name: 'MBIST', description: '启动时进行内存自检', iso: 'Part 6, 7.4.2' }
+                ],
+                asilD: [
+                    { name: 'RAM ECC', description: '启用RAM错误校正码', iso: 'Part 5, 7.4.2' },
+                    { name: 'MBIST', description: '定期进行内存自检', iso: 'Part 6, 7.4.2' },
+                    { name: 'RAM冗余', description: '关键数据使用冗余存储', iso: 'Part 5, 7.4.2' }
+                ],
+                optional: []
             },
             flash: {
-                required: [
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证Flash功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'Flash ECC', description: '启用Flash错误校正码', iso: 'Part 5, 7.4.2' }
+                ],
+                asilC: [
                     { name: 'Flash ECC', description: '启用Flash错误校正码', iso: 'Part 5, 7.4.2' },
                     { name: '配置区保护', description: '保护关键配置区域', iso: 'Part 6, 7.4.2' }
                 ],
-                optional: [
+                asilD: [
+                    { name: 'Flash ECC', description: '启用Flash错误校正码', iso: 'Part 5, 7.4.2' },
+                    { name: '配置区保护', description: '保护关键配置区域', iso: 'Part 6, 7.4.2' },
                     { name: 'Readback', description: '读取验证写入数据', iso: 'Part 5, 7.4.2' }
-                ]
+                ],
+                optional: []
             },
             can: {
-                required: [
+                asilA: [
+                    { name: '超时监测', description: '监控接收超时', iso: 'Part 5, 7.4.7' }
+                ],
+                asilB: [
                     { name: 'CRC校验', description: '启用CAN报文的CRC校验', iso: 'Part 6, 7.4.7' },
                     { name: '超时监测', description: '监控接收超时', iso: 'Part 5, 7.4.7' }
                 ],
-                optional: [
-                    { name: '报文冗余', description: '关键报文使用双通道', iso: 'Part 5, 7.4.7' }
-                ]
+                asilC: [
+                    { name: 'CRC校验', description: '启用CAN报文的CRC校验', iso: 'Part 6, 7.4.7' },
+                    { name: '超时监测', description: '监控接收超时', iso: 'Part 5, 7.4.7' },
+                    { name: '报文ID检查', description: '验证报文ID合法性', iso: 'Part 5, 7.4.7' }
+                ],
+                asilD: [
+                    { name: 'CRC校验', description: '启用CAN报文的CRC校验', iso: 'Part 6, 7.4.7' },
+                    { name: '超时监测', description: '监控接收超时', iso: 'Part 5, 7.4.7' },
+                    { name: '报文冗余', description: '关键报文使用双通道', iso: 'Part 5, 7.4.7' },
+                    { name: 'E2E保护', description: '端到端保护', iso: 'Part 6, 7.4.7' }
+                ],
+                optional: []
             },
             clock: {
-                required: [
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证时钟功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '时钟监控', description: '监控时钟失效', iso: 'Part 5, 7.4.6' }
+                ],
+                asilC: [
                     { name: '时钟监控', description: '监控时钟失效', iso: 'Part 5, 7.4.6' },
                     { name: 'PLL自检', description: '启动时验证PLL功能', iso: 'Part 6, 7.4.6' }
                 ],
-                optional: [
+                asilD: [
+                    { name: '时钟监控', description: '监控时钟失效', iso: 'Part 5, 7.4.6' },
+                    { name: 'PLL自检', description: '启动时验证PLL功能', iso: 'Part 6, 7.4.6' },
                     { name: '时钟冗余', description: '使用双时钟源', iso: 'Part 5, 7.4.6' }
-                ]
+                ],
+                optional: []
+            },
+            // 新增外设
+            gtm: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证GTM功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'GTM自检', description: '启动时验证GTM功能', iso: 'Part 6' },
+                    { name: '输出监控', description: 'GTM输出信号监控', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: 'GTM自检', description: '启动时验证GTM功能', iso: 'Part 6' },
+                    { name: '输出监控', description: 'GTM输出信号监控', iso: 'Part 5' },
+                    { name: '输入验证', description: '验证输入信号有效性', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: 'GTM自检', description: '启动时验证GTM功能', iso: 'Part 6' },
+                    { name: '输出监控', description: 'GTM输出信号监控', iso: 'Part 5' },
+                    { name: '冗余输出', description: '关键信号冗余输出', iso: 'Part 5' },
+                    { name: '故障检测', description: 'FTTI超时检测', iso: 'Part 5' }
+                ],
+                optional: []
+            },
+            flexray: {
+                asilA: [
+                    { name: '超时监测', description: '帧超时监测', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'CRC校验', description: '启用FlexRay CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '帧超时监测', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: 'CRC校验', description: '启用FlexRay CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '帧超时监测', iso: 'Part 5' },
+                    { name: '通道冗余', description: '双通道冗余', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: 'CRC校验', description: '启用FlexRay CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '帧超时监测', iso: 'Part 5' },
+                    { name: '通道冗余', description: '双通道冗余', iso: 'Part 5' },
+                    { name: 'E2E保护', description: '端到端保护', iso: 'Part 6' }
+                ],
+                optional: []
+            },
+            ethernet: {
+                asilA: [
+                    { name: 'CRC校验', description: '以太网帧CRC校验', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'CRC校验', description: '以太网帧CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: 'CRC校验', description: '以太网帧CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' },
+                    { name: '数据校验', description: 'EtherCAT Safety等协议', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: 'CRC校验', description: '以太网帧CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' },
+                    { name: '数据校验', description: 'EtherCAT Safety等协议', iso: 'Part 5' },
+                    { name: 'E2E保护', description: '端到端数据保护', iso: 'Part 6' }
+                ],
+                optional: []
+            },
+            spi: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证SPI功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'CRC校验', description: '数据CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: 'CRC校验', description: '数据CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' },
+                    { name: '双通道', description: 'SPI双通道冗余', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: 'CRC校验', description: '数据CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' },
+                    { name: '双通道', description: 'SPI双通道冗余', iso: 'Part 5' },
+                    { name: 'E2E保护', description: '端到端保护', iso: 'Part 6' }
+                ],
+                optional: []
+            },
+            i2c: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证I2C功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: 'CRC校验', description: '数据CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: 'CRC校验', description: '数据CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' },
+                    { name: '地址校验', description: '从机地址校验', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: 'CRC校验', description: '数据CRC校验', iso: 'Part 6' },
+                    { name: '超时监测', description: '通信超时监测', iso: 'Part 5' },
+                    { name: '双I2C', description: '双I2C冗余', iso: 'Part 5' }
+                ],
+                optional: []
+            },
+            dma: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证DMA功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '地址验证', description: 'DMA地址边界检查', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: '地址验证', description: 'DMA地址边界检查', iso: 'Part 5' },
+                    { name: '传输计数校验', description: '传输计数验证', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: '地址验证', description: 'DMA地址边界检查', iso: 'Part 5' },
+                    { name: '传输计数校验', description: '传输计数验证', iso: 'Part 5' },
+                    { name: 'DMA自检', description: 'DMA通道自检', iso: 'Part 6' }
+                ],
+                optional: []
+            },
+            interrupt: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证中断功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '中断计数', description: '中断触发计数监控', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: '中断计数', description: '中断触发计数监控', iso: 'Part 5' },
+                    { name: '丢失检测', description: '中断丢失检测', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: '中断计数', description: '中断触发计数监控', iso: 'Part 5' },
+                    { name: '丢失检测', description: '中断丢失检测', iso: 'Part 5' },
+                    { name: '冗余中断', description: '关键中断冗余', iso: 'Part 5' }
+                ],
+                optional: []
+            },
+            voltage: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证电压监测', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '电压监测', description: '监控供电电压', iso: 'Part 5, 7.4.6' }
+                ],
+                asilC: [
+                    { name: '电压监测', description: '监控供电电压', iso: 'Part 5, 7.4.6' },
+                    { name: '欠压/过压', description: '欠压/过压阈值检测', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: '电压监测', description: '监控供电电压', iso: 'Part 5, 7.4.6' },
+                    { name: '欠压/过压', description: '欠压/过压阈值检测', iso: 'Part 5' },
+                    { name: '多电压监测', description: '多路电压冗余监测', iso: 'Part 5' }
+                ],
+                optional: []
+            },
+            temperature: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证温度监测', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '温度监测', description: '芯片温度监控', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: '温度监测', description: '芯片温度监控', iso: 'Part 5' },
+                    { name: '温度阈值', description: '温度阈值保护', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: '温度监测', description: '芯片温度监控', iso: 'Part 5' },
+                    { name: '温度阈值', description: '温度阈值保护', iso: 'Part 5' },
+                    { name: '多传感器', description: '多温度传感器冗余', iso: 'Part 5' }
+                ],
+                optional: []
+            },
+            port: {
+                asilA: [
+                    { name: '功能验证', description: '开发阶段验证IO功能', iso: 'Part 6' }
+                ],
+                asilB: [
+                    { name: '输入监测', description: '关键输入信号监测', iso: 'Part 5' }
+                ],
+                asilC: [
+                    { name: '输入监测', description: '关键输入信号监测', iso: 'Part 5' },
+                    { name: '输出回读', description: '输出信号回读验证', iso: 'Part 5' }
+                ],
+                asilD: [
+                    { name: '输入监测', description: '关键输入信号监测', iso: 'Part 5' },
+                    { name: '输出回读', description: '输出信号回读验证', iso: 'Part 5' },
+                    { name: '冗余IO', description: '关键信号冗余IO', iso: 'Part 5' }
+                ],
+                optional: []
             }
         };
+
+        // 显示外设说明弹窗
+        function showPeripheralInfo(peripheralId) {
+            const info = peripheralInfo[peripheralId];
+            if (!info) return;
+
+            document.getElementById('modalTitle').textContent = info.name;
+            document.getElementById('modalSubtitle').textContent = info.category;
+            
+            document.getElementById('modalContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-blue-700">📖 这是什么？</h4>
+                        <p class="text-gray-700">${info.what}</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-green-700">🔧 使用场景</h4>
+                        <p class="text-gray-700">${info.usage}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('peripheralModal').classList.remove('hidden');
+            document.getElementById('peripheralModal').classList.add('flex');
+        }
+
+        function closePeripheralModal() {
+            document.getElementById('peripheralModal').classList.add('hidden');
+            document.getElementById('peripheralModal').classList.remove('flex');
+        }
 
         function generateRecommendation() {
             const asil = document.getElementById('asilLevel').value;
@@ -240,14 +785,20 @@
                 return;
             }
 
-            // 收集所有机制
+            // 收集所有机制 - 根据 ASIL 等级选择
             let required = [];
             let optional = [];
 
             selected.forEach(p => {
                 if (mechanismData[p]) {
-                    required = required.concat(mechanismData[p].required);
-                    optional = optional.concat(mechanismData[p].optional);
+                    const data = mechanismData[p];
+                    // 根据 ASIL 等级选择对应机制
+                    if (asil === 'D' && data.asilD) required = required.concat(data.asilD);
+                    else if (asil === 'C' && data.asilC) required = required.concat(data.asilC);
+                    else if (asil === 'B' && data.asilB) required = required.concat(data.asilB);
+                    else if (asil === 'A' && data.asilA) required = required.concat(data.asilA);
+                    // 可选机制
+                    if (data.optional) optional = optional.concat(data.optional);
                 }
             });
 
