@@ -168,9 +168,12 @@
 
     <script>
         const mechanismDetail = {
+            // ===== CPU 模块 =====
             lbist: {
                 name: 'LBIST (Logic Built-In Self-Test)',
-                category: 'CPU安全机制',
+                category: 'CPU - 逻辑自检',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.1',
                 description: '逻辑内建自检是一种在芯片内部集成的自检功能，用于检测CPU逻辑单元的失效。通过在芯片内部生成测试向量并比较预期结果，可以检测出逻辑电路中的单点失效和双点失效。',
                 working: [
                     '1. 启动时触发LBIST',
@@ -180,98 +183,341 @@
                     '5. 生成PASS/FAIL报告'
                 ],
                 config: [
-                    'Mc_Me_SetMode(ME_MODE_LBIST); // 进入LBIST模式',
-                    'Scu_Lbist_Init(&Scu_LbistConfig); // 配置LBIST参数',
-                    'Mc_Me_StartLBIST(); // 启动LBIST',
-                    '// 等待LBIST完成',
-                    'while(Scu_Lbist_GetStatus() != LBIST_DONE);'
+                    '// LBIST 配置 (TC3xx)',
+                    'Scu_Lbist_Init(&Scu_LbistConfig);',
+                    'Scu_Lbist_SetConfig(LBIST_NORMAL_MODE, 0x1234);',
+                    'Scu_Lbist_Start();',
+                    'while(Scu_Lbist_GetResult() == LBIST_RUNNING);'
                 ],
-                dc: {
-                    low: '60-90% (简化配置)',
-                    medium: '90-95% (标准配置)',
-                    high: '≥95% (增强配置 + 周期性运行)'
-                },
-                impact: '取消LBIST将导致CPU逻辑失效无法检测，可能导致错误计算结果，可能引发安全功能失效。',
+                dc: { low: '60-90%', medium: '90-95%', high: '≥95%' },
+                impact: '取消LBIST将导致CPU逻辑失效无法检测，可能导致错误计算结果。',
                 iso: 'ISO 26262 Part 6, 7.4.1'
             },
-            watchdog: {
-                name: '看门狗 (Watchdog)',
-                category: '监控机制',
-                description: '看门狗是一种定时器机制，用于检测软件死循环或死锁。当软件停止喂狗时，看门狗超时将触发系统复位或进入安全状态。',
+            cpu_lockstep: {
+                name: 'CPU 锁步 (Lockstep)',
+                category: 'CPU - 冗余',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.1',
+                description: 'CPU锁步技术使用两个完全同步的CPU核心执行相同的指令，通过比对输出结果来检测单点失效。TC3xx的P1内核支持锁步模式。',
                 working: [
-                    '1. 看门狗初始化',
-                    '2. 软件在正常任务中定期喂狗',
-                    '3. 如果软件死循环，超时发生',
-                    '4. 触发安全机制：复位/进入安全状态',
-                    '5. 记录错误日志'
+                    '1. 主核和锁步核同步执行相同指令',
+                    '2. 每周期比对两个核的输出',
+                    '3. 检测到不一致时触发错误信号',
+                    '4. 系统进入安全状态'
                 ],
                 config: [
-                    'Wdg_Supply_Init(&Wdg_Config); // 初始化看门狗',
-                    'Wdg_SetWindow(50, 100); // 设置50-100ms窗口',
-                    'Wdg_Enable(); // 启用看门狗',
-                    '// 主循环中',
-                    'Wdg_Feed(); // 喂狗'
+                    '// 锁步核配置',
+                    'CPU_LCK_Init();',
+                    'CPU_LCK_Enable(CPU_0, CPU_1);',
+                    'CPU_LCK_SetReaction(REACTION_SAFE_STATE);'
                 ],
-                dc: {
-                    low: '60-90% (标准看门狗)',
-                    medium: '90-95% (窗口看门狗)',
-                    high: '≥95% (双看门狗 + 任务监控)'
-                },
-                impact: '取消看门狗将导致软件死循环无法检测，系统可能卡死导致安全功能完全失效。',
-                iso: 'ISO 26262 Part 6, 7.4.10'
+                dc: { low: 'N/A', medium: '90-95%', high: '≥97%' },
+                impact: '取消锁步核将失去对CPU瞬态故障的检测能力。',
+                iso: 'ISO 26262 Part 5, 7.4.1'
+            },
+            pmc: {
+                name: 'PMC (Program Flow Monitor)',
+                category: 'CPU - 程序流监控',
+                type: 'SW',
+                reference: 'TC3xx Safety Manual Ch.5.1',
+                description: '程序流监控通过监控软件执行顺序来检测程序跑飞、死循环等故障。使用PMC模块可以配置监控点和超时时间。',
+                working: [
+                    '1. 在关键代码点插入监控调用',
+                    '2. PMC模块记录各监控点的调用时间',
+                    '3. 超时则触发错误中断',
+                    '4. 系统进入安全状态'
+                ],
+                config: [
+                    '// PMC 配置',
+                    'PMC_Init(&PmcConfig);',
+                    'PMC_SetTaskWatchdog(100, 10); // 100ms超时',
+                    'PMC_Start();',
+                    '// 任务中',
+                    'PMC_Kick(); // 喂狗'
+                ],
+                dc: { low: '60-80%', medium: '80-90%', high: '90-97%' },
+                impact: '取消PMC可能导致程序死循环无法检测。',
+                iso: 'ISO 26262 Part 5, 7.4.9'
+            },
+
+            // ===== 内存模块 =====
+            ram_ecc: {
+                name: 'RAM ECC (Error Correction Code)',
+                category: '内存 - 错误纠正',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.2',
+                description: 'RAM ECC为内存提供单比特错误纠正和双比特错误检测功能。TC3xx的SRAM和Cache均支持ECC保护。',
+                working: [
+                    '1. 写入数据时计算ECC校验位',
+                    '2. 存储数据和校验位',
+                    '3. 读取时重新计算ECC',
+                    '4. 纠正单比特错误 / 报告双比特错误'
+                ],
+                config: [
+                    '// SRAM ECC配置',
+                    'Mcu_InitRam(&RamConfig);',
+                    'Mcu_EnableRamEcc(MEMORY_SRAM0);',
+                    'Mcu_RegisterErrorCallback(ECC_Error_Handler);'
+                ],
+                dc: { low: '单比特100%', medium: '双比特90%', high: '双比特99%' },
+                impact: '取消ECC将无法检测内存软错误。',
+                iso: 'ISO 26262 Part 5, 7.4.2'
             },
             mbist: {
                 name: 'MBIST (Memory Built-In Self-Test)',
-                category: '内存安全机制',
+                category: '内存 - 自检',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.2',
                 description: '内存内建自检用于检测RAM和Flash中的物理失效，包括位翻转、桥连、开路等故障模式。',
                 working: [
                     '1. 配置MBIST控制器',
-                    '2. 选择测试算法(March, MATSIG, etc.)',
+                    '2. 选择测试算法(March, MATSIG)',
                     '3. 执行测试',
                     '4. 分析失败地址',
                     '5. 报告结果'
                 ],
                 config: [
-                    'Mcu_Mbist_Init(&Mbist_Config);',
+                    '// MBIST 配置',
+                    'Mcu_Mbist_Init(&MbistConfig);',
                     'Mcu_Mbist_SetAlgorithm(MBIST_MARCH);',
-                    'Mcu_Mbist_Execute(RAM_START, RAM_END);',
-                    'if (Mcu_Mbist_GetResult() == MBIST_FAIL) {',
-                    '    // 处理失效'
+                    'Mcu_Mbist_Execute(RAM_START, RAM_END);'
                 ],
-                dc: {
-                    low: '70-85% (简单March测试)',
-                    medium: '85-95% (多种算法组合)',
-                    high: '≥95% (全算法 + 运行时监控)'
-                },
-                impact: '取消MBIST将无法检测内存失效，可能导致错误数据使用，引发不安全控制输出。',
+                dc: { low: '70-85%', medium: '85-95%', high: '≥95%' },
+                impact: '取消MBIST将无法检测内存失效。',
                 iso: 'ISO 26262 Part 6, 7.4.2'
             },
-            ecc: {
-                name: 'ECC (Error Correction Code)',
-                category: '存储安全机制',
-                description: 'ECC通过添加冗余校验位来检测和纠正内存中的单比特错误，同时检测双比特错误。',
+
+            // ===== ADC 模块 =====
+            adc_self_test: {
+                name: 'ADC 自检',
+                category: 'ADC - 功能检测',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.3',
+                description: 'ADC自检通过内部参考电压验证ADC转换功能的正确性，包括线性度、偏移误差等参数的检测。',
                 working: [
-                    '1. 写入数据时计算ECC校验位',
-                    '2. 存储数据和校验位',
-                    '3. 读取时重新计算ECC',
-                    '4. 比对校验位',
-                    '5. 纠正单比特错误 / 报告双比特错误'
+                    '1. 启动ADC自检模式',
+                    '2. 内部产生已知电压',
+                    '3. ADC转换并比对结果',
+                    '4. 超出容差则报告失败'
                 ],
                 config: [
-                    '// RAM配置',
-                    'Mcu_EnableRamEcc(RAM_INSTANCE);',
-                    '// Flash配置', 
-                    'Mcu_EnableFlashEcc(FLASH_INSTANCE);',
-                    '// 错误处理回调',
-                    'Mcu_RegisterEccErrorCallback(Ecc_Error_Handler);'
+                    '// ADC自检配置',
+                    'Adc_Init(&AdcConfig);',
+                    'Adc_EnableSelfTest(ADC_CHANNEL_0);',
+                    'Adc_StartSelfTest();'
                 ],
-                dc: {
-                    low: '单比特错误: 100% (可纠正)',
-                    medium: '双比特错误: 100% (可检测)',
-                    high: '更多错误: 取决于配置'
-                },
-                impact: '取消ECC将无法检测内存软错误，在高辐射或高温环境下可能产生不安全数据。',
+                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
+                impact: '取消ADC自检无法检测ADC硬件失效。',
                 iso: 'ISO 26262 Part 6, 7.4.2'
+            },
+            adc_duality: {
+                name: 'ADC 通道冗余',
+                category: 'ADC - 冗余',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.3',
+                description: '使用双通道ADC对同一信号进行采样，通过比对结果来检测ADC失效。适用于ASIL C/D系统。',
+                working: [
+                    '1. 配置双通道同步采样',
+                    '2. 两通道同时采样同一信号',
+                    '3. 比对两个采样值',
+                    '4. 超差触发错误处理'
+                ],
+                config: [
+                    '// 双通道配置',
+                    'Adc_SetDualMode(ADC_CH0, ADC_CH1);',
+                    'Adc_SetComparisonTolerance(10); // 10位数容忍'
+                ],
+                dc: { low: 'N/A', medium: '90-95%', high: '≥97%' },
+                impact: '取消通道冗余将失去对ADC故障的冗余检测。',
+                iso: 'ISO 26262 Part 5, 7.4.3'
+            },
+
+            // ===== PWM/GTM 模块 =====
+            pwm_monitor: {
+                name: 'PWM 输出监控',
+                category: 'PWM - 输出检测',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.4',
+                description: 'PWM输出监控通过捕获模块检测PWM输出的正确性，包括频率、占空比等参数。',
+                working: [
+                    '1. 配置GTM捕获功能',
+                    '2. 捕获PWM输出信号',
+                    '3. 计算实际占空比/频率',
+                    '4. 与预期值比对'
+                ],
+                config: [
+                    '// GTM PWM监控',
+                    'Gtm_Init(&GtmConfig);',
+                    'Gtm_EnablePwmMonitor(PWM_OUT, CAP_IN);',
+                    'Gtm_SetTolerance(5, 5); // 5%容差'
+                ],
+                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
+                impact: '取消PWM监控可能无法检测PWM输出错误。',
+                iso: 'ISO 26262 Part 5, 7.4.5'
+            },
+
+            // ===== 时钟模块 =====
+            clock_monitor: {
+                name: '时钟监控 (CGM)',
+                category: '时钟 - 失效检测',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.5',
+                description: '时钟监控系统监测主时钟和PLL的工作状态，检测时钟失效、频率偏差等故障。',
+                working: [
+                    '1. 时钟监控器使用独立参考时钟',
+                    '2. 监测主时钟频率',
+                    '3. 检测时钟缺失',
+                    '4. 超阈值触发错误'
+                ],
+                config: [
+                    '// 时钟监控配置',
+                    'SCU_CGM_Init();',
+                    'SCU_CGM_SetMonitor(PLL, 5); // 5%阈值',
+                    'SCU_CGM_Enable();'
+                ],
+                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
+                impact: '取消时钟监控可能导致系统运行在异常时钟下。',
+                iso: 'ISO 26262 Part 5, 7.4.6'
+            },
+
+            // ===== 看门狗模块 =====
+            wdt: {
+                name: '看门狗 (Watchdog)',
+                category: '监控 - 软件执行',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.6',
+                description: '看门狗是一种定时器机制，用于检测软件死循环或死锁。TC3xx内部集成窗口看门狗。',
+                working: [
+                    '1. 看门狗初始化',
+                    '2. 软件在正常任务中定期喂狗',
+                    '3. 如果软件死循环，超时发生',
+                    '4. 触发系统复位或安全状态'
+                ],
+                config: [
+                    '// 窗口看门狗配置',
+                    'Wdt_Init(&WdtConfig);',
+                    'Wdt_SetWindow(50, 100); // 50-100ms',
+                    'Wdt_Start();',
+                    '// 喂狗',
+                    'Wdt_Clear();'
+                ],
+                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
+                impact: '取消看门狗将导致软件死循环无法检测。',
+                iso: 'ISO 26262 Part 6, 7.4.10'
+            },
+
+            // ===== 通信模块 =====
+            can_crc: {
+                name: 'CAN CRC 校验',
+                category: '通信 - 数据保护',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.7',
+                description: 'CAN协议层提供CRC校验，用于检测CAN报文传输错误。',
+                working: [
+                    '1. 发送节点计算CRC',
+                    '2. 接收节点重新计算CRC',
+                    '3. 比对CRC值',
+                    '4. 错误帧自动处理'
+                ],
+                config: [
+                    '// CAN配置中启用CRC',
+                    'Can_Init(&CanConfig);',
+                    'Can_SetRxFilter(0, STD_ID);'
+                ],
+                dc: { low: '90%', medium: '95%', high: '≥97%' },
+                impact: '取消CRC可能导致错误数据被接收。',
+                iso: 'ISO 26262 Part 6, 7.4.7'
+            },
+            e2e: {
+                name: 'E2E 保护',
+                category: '通信 - 端到端保护',
+                type: 'SW',
+                reference: 'TC3xx Safety Manual Ch.5.7',
+                description: 'E2E(End-to-End)保护为AUTOSAR通信提供端到端的数据保护，包括CRC、计数器等。',
+                working: [
+                    '1. 发送方添加CRC和计数器',
+                    '2. 接收方验证CRC和计数器',
+                    '3. 检测数据丢失/重复/错序',
+                    '4. 报告错误或丢弃数据'
+                ],
+                config: [
+                    '// E2E配置',
+                    'E2E_Init(&E2EConfig);',
+                    'E2E_Protect(&txData, counter);',
+                    'E2E_Verify(&rxData);'
+                ],
+                dc: { low: '80%', medium: '90%', high: '≥95%' },
+                impact: '取消E2E可能导致通信数据错误无法检测。',
+                iso: 'ISO 26262 Part 6, 7.4.7'
+            },
+
+            // ===== 电压/温度监控 =====
+            vmon: {
+                name: '电压监控 (VMON)',
+                category: '供电 - 电压检测',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.8',
+                description: '电压监控模块监测芯片供电电压，检测欠压、过压等异常情况。',
+                working: [
+                    '1. 监测各路供电电压',
+                    '2. 与内部参考电压比对',
+                    '3. 超阈值触发中断/复位',
+                    '4. 进入安全状态'
+                ],
+                config: [
+                    '// VMON配置',
+                    'SCU_VMON_Init();',
+                    'SCU_VMON_SetThreshold(VSUPPLY, 2.7, 5.5);',
+                    'SCU_VMON_Enable();'
+                ],
+                dc: { low: '60-80%', medium: '80-90%', high: '≥90%' },
+                impact: '取消电压监控可能导致芯片在异常电压下工作。',
+                iso: 'ISO 26262 Part 5, 7.4.6'
+            },
+            tmon: {
+                name: '温度监控 (TMON)',
+                category: '供电 - 温度检测',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.8',
+                description: '温度监控模块监测芯片结温，防止过热导致功能失效或损坏。',
+                working: [
+                    '1. 内置温度传感器测量结温',
+                    '2. 与阈值比对',
+                    '3. 超温触发降频或复位',
+                    '4. 通知系统采取散热措施'
+                ],
+                config: [
+                    '// 温度监控配置',
+                    'SCU_TMON_Init();',
+                    'SCU_TMON_SetThreshold(145); // 145°C',
+                    'SCU_TMON_Enable();'
+                ],
+                dc: { low: 'N/A', medium: '80%', high: '≥90%' },
+                impact: '取消温度监控可能导致芯片过热损坏。',
+                iso: 'ISO 26262 Part 5'
+            },
+
+            // ===== 中断/DMA =====
+           dma: {
+                name: 'DMA 错误检测',
+                category: '传输 - 错误检测',
+                type: 'HW',
+                reference: 'TC3xx Safety Manual Ch.5.9',
+                description: 'DMA模块提供传输错误检测，包括地址错误、传输错误等。',
+                working: [
+                    '1. DMA传输完成后检查状态',
+                    '2. 检测地址/传输错误',
+                    '3. 错误时触发中断',
+                    '4. 软件处理错误'
+                ],
+                config: [
+                    '// DMA错误处理',
+                    'Dma_Init(&DmaConfig);',
+                    'Dma_EnableErrorInterrupt(CHANNEL_0);'
+                ],
+                dc: { low: '60%', medium: '80%', high: '≥90%' },
+                impact: '取消DMA错误检测可能导致错误数据传输。',
+                iso: 'ISO 26262 Part 5'
             }
         };
 
@@ -282,8 +528,17 @@
             document.getElementById('modalTitle').textContent = mech.name;
             document.getElementById('modalSubtitle').textContent = mech.category;
 
+            // 确定类型标签颜色
+            const typeColor = mech.type === 'HW' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600';
+
             let content = `
                 <div class="space-y-6">
+                    <!-- 类型和参考 -->
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 ${typeColor} rounded-full text-sm font-medium">${mech.type}</span>
+                        <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">${mech.reference || 'TC3xx'}</span>
+                    </div>
+
                     <!-- 描述 -->
                     <div class="bg-blue-50 p-4 rounded-lg">
                         <h4 class="font-semibold mb-2">📖 工作原理</h4>
@@ -305,13 +560,13 @@
 
                     <!-- 配置代码 -->
                     <div>
-                        <h4 class="font-semibold mb-3">💻 配置示例</h4>
+                        <h4 class="font-semibold mb-3">💻 配置示例 (TC3xx)</h4>
                         <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>${mech.config.join('\n')}</code></pre>
                     </div>
 
                     <!-- 诊断覆盖率 -->
                     <div>
-                        <h4 class="font-semibold mb-3">📊 诊断覆盖率</h4>
+                        <h4 class="font-semibold mb-3">📊 诊断覆盖率 (DC)</h4>
                         <div class="grid grid-cols-3 gap-4">
                             <div class="bg-yellow-50 p-3 rounded-lg text-center">
                                 <div class="text-xs text-gray-500">低配置</div>

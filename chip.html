@@ -151,7 +151,7 @@
             <!-- TAS414x -->
             <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('tas414x')">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded font-medium">SBC</span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded font-medium">功率IC</span>
                     <span class="text-green-500 text-sm">✓ 已收录</span>
                 </div>
                 <h3 class="text-lg font-semibold">TAS414x</h3>
@@ -165,6 +165,70 @@
                         <div>
                             <span class="text-gray-400">功能:</span>
                             <span class="font-medium">功率级</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 传感器 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('kma310')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">传感器</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">KMA310</h3>
+                <p class="text-gray-500 text-sm mt-1">NXP</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">类型:</span>
+                            <span class="font-medium">角度传感器</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">应用:</span>
+                            <span class="font-medium">踏板位置</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('kmi8x')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">传感器</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">KMI8x</h3>
+                <p class="text-gray-500 text-sm mt-1">NXP</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">类型:</span>
+                            <span class="font-medium">速度传感器</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">应用:</span>
+                            <span class="font-medium">轮速传感器</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition" onclick="showChipDetail('a31102')">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-medium">传感器</span>
+                    <span class="text-green-500 text-sm">✓ 已收录</span>
+                </div>
+                <h3 class="text-lg font-semibold">A31102</h3>
+                <p class="text-gray-500 text-sm mt-1">Allegro</p>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-400">类型:</span>
+                            <span class="font-medium">电流传感器</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">应用:</span>
+                            <span class="font-medium">母线电流</span>
                         </div>
                     </div>
                 </div>
@@ -202,40 +266,107 @@
                 type: 'MCU',
                 asil: 'D',
                 process: '40nm',
-                cores: '3x TriCore',
+                cores: '3x TriCore (P1/P2/P3)',
                 frequency: '300MHz',
+                features: {
+                    cpu: 'TriCore 1.6P, 3核心, 每个核心16KB ICache/DCache',
+                    memory: '2MB Flash (ECC), 472KB RAM (ECC)',
+                    adc: '2x 12-bit SAR ADC, 24通道, 3.5MS/s',
+                    pwm: 'GTM/MCU_PWM, 最高300MHz',
+                    timer: 'STM系统定时器, GPT定时器',
+                    communication: '4x CAN-FD, 3x SPI, 4x I2C, 1x Ethernet',
+                    safety: 'LBIST, MBIST, PMBIST, 锁步核, ECC, 时钟监控'
+                },
                 safety: {
-                    mechanisms: ['LBIST', 'MBIST', 'PMBIST', 'CPU自检', '内存ECC', '时钟监控', '电压监控'],
+                    mechanisms: ['LBIST (Logic BIST)', 'MBIST (Memory BIST)', 'PMBIST', 'CPU自检', '内存ECC', '时钟监控', '电压监控', '程序流监控(PMC)'],
                     coverage: '99%',
                     fit: '10 FIT'
                 },
-                peripherals: ['ADC', 'PWM', 'GPT', 'SPI', 'I2C', 'CAN', 'Ethernet']
+                documents: ['Safety Manual', 'MCAL Manual', 'Datatsheet']
             },
             tlf35584: {
                 name: 'TLF35584',
                 vendor: 'Infineon',
                 type: 'SBC',
                 asil: 'D',
-                features: '电源管理 + 看门狗 + 安全状态控制',
+                features: {
+                    power: '5V/3.3V/1.3V LDO, 升压/降压控制器',
+                    watchdog: '窗口看门狗 + 问答看门狗',
+                    reset: '可配置复位输出, 安全状态控制',
+                    communication: 'SPI, ISOSPI接口'
+                },
                 safety: {
-                    mechanisms: ['QWDT', 'SWDT', 'PMU', '供电监控', '温度监控', '失效安全输出'],
+                    mechanisms: ['QWDT (问答看门狗)', 'SWDT (窗口看门狗)', '供电监控', '温度监控', '失效安全输出', 'VMON监控'],
                     coverage: '99%',
                     fit: '15 FIT'
                 },
-                documents: ['Datasheet', 'Safety Manual', 'Application Notes']
+                documents: ['Datasheet', 'Safety Manual', 'App Notes']
             },
             fs6500: {
                 name: 'FS6500',
                 vendor: 'NXP',
                 type: 'SBC',
                 asil: 'D',
-                features: 'PMIC + CAN/LIN 收发器',
+                features: {
+                    power: '多路LDO, 5V/3.3V/1.25V',
+                    watchdog: '看门狗',
+                    reset: '系统复位管理',
+                    communication: 'CAN/LIN收发器'
+                },
                 safety: {
                     mechanisms: ['看门狗', '失效检测', '电压监控', '温度保护'],
                     coverage: '97%',
                     fit: '20 FIT'
                 },
                 documents: ['Datasheet', 'Safety Manual', 'FMEDA']
+            },
+            kma310: {
+                name: 'KMA310',
+                vendor: 'NXP',
+                type: '传感器',
+                asil: 'D',
+                features: {
+                    type: '角度传感器 (Hall-based)',
+                    interface: 'PWM输出',
+                    accuracy: '12位分辨率'
+                },
+                safety: {
+                    mechanisms: ['内部诊断', '输出验证'],
+                    coverage: '95%'
+                },
+                documents: ['Datasheet', 'Safety Manual']
+            },
+            kmi8x: {
+                name: 'KMI8x',
+                vendor: 'NXP',
+                type: '传感器',
+                asil: 'D',
+                features: {
+                    type: '轮速传感器 (Hall-based)',
+                    interface: 'PWM输出',
+                    speed: '0-25000 RPM'
+                },
+                safety: {
+                    mechanisms: ['诊断模式', '输出验证'],
+                    coverage: '95%'
+                },
+                documents: ['Datasheet']
+            },
+            a31102: {
+                name: 'A31102',
+                vendor: 'Allegro',
+                type: '传感器',
+                asil: 'B',
+                features: {
+                    type: '电流传感器 (Hall-based)',
+                    interface: '模拟输出',
+                    range: '±50A, ±100A, ±200A'
+                },
+                safety: {
+                    mechanisms: ['诊断输出', '偏置补偿'],
+                    coverage: '90%'
+                },
+                documents: ['Datasheet']
             }
         };
 

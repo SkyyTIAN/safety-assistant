@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统应用假设 | 功能安全专家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-xl font-bold">系统应用假设</h1>
+                        <p class="text-xs text-blue-200">基于 TC3xx Safety Manual Chapter 3</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-white/90 hover:text-white">首页</a>
+                    <a href="chip.html" class="text-white/90 hover:text-white">芯片查询</a>
+                    <a href="architecture.html" class="text-white/90 hover:text-white">架构设计</a>
+                    <a href="mechanism.html" class="text-white/90 hover:text-white">安全机制</a>
+                    <a href="application.html" class="text-white font-medium">系统假设</a>
+                    <a href="glossary.html" class="text-white/90 hover:text-white">术语库</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+            <p class="text-sm text-blue-700">
+                <strong>参考:</strong> AURIX TC3xx Safety Manual Chapter 3 - System Assumptions<br>
+                以下内容基于英飞凌 AURIX TC3xx Safety Manual 第三章，系统应用假设
+            </p>
+        </div>
+
+        <!-- 简介 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h3 class="text-xl font-bold mb-4">📖 什么是系统应用假设？</h3>
+            <p class="text-gray-600">
+                系统应用假设(System Assumptions)定义了芯片在系统中使用时需要满足的条件。
+                这些假设是芯片安全设计的基础，也是系统集成时需要验证的关键点。
+            </p>
+        </div>
+
+        <!-- 8大应用假设 -->
+        <div class="space-y-6">
+            <!-- 1. 系统架构 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-blue-600">1</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">系统架构假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            TC3xx 被定义为安全相关系统中的主控芯片，需要与SBC（系统基础芯片）配合使用。
+                            典型架构包括电源管理、看门狗监控、安全状态控制。
+                        </p>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h5 class="font-medium mb-2">典型系统架构:</h5>
+                            <div class="flex items-center justify-center space-x-4 text-sm">
+                                <div class="bg-blue-100 px-4 py-2 rounded">传感器</div>
+                                <span>→</span>
+                                <div class="bg-blue-100 px-4 py-2 rounded">TC3xx (主控)</div>
+                                <span>→</span>
+                                <div class="bg-green-100 px-4 py-2 rounded">SBC (监控)</div>
+                                <span>→</span>
+                                <div class="bg-red-100 px-4 py-2 rounded">执行器</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ASIL等级 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-green-600">2</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">ASIL 等级假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            TC3xx 适用于 ASIL D 安全等级的系统开发。
+                            芯片内部的安全机制支持不同 ASIL 等级的系统需求。
+                        </p>
+                        <div class="grid grid-cols-4 gap-4 mt-4">
+                            <div class="text-center p-3 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">A</div>
+                                <div class="text-xs text-gray-500">60%+ DC</div>
+                            </div>
+                            <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                                <div class="text-2xl font-bold text-yellow-600">B</div>
+                                <div class="text-xs text-gray-500">90%+ DC</div>
+                            </div>
+                            <div class="text-center p-3 bg-orange-50 rounded-lg">
+                                <div class="text-2xl font-bold text-orange-600">C</div>
+                                <div class="text-xs text-gray-500">97%+ DC</div>
+                            </div>
+                            <div class="text-center p-3 bg-red-50 rounded-lg">
+                                <div class="text-2xl font-bold text-red-600">D</div>
+                                <div class="text-xs text-gray-500">99%+ DC</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 电源 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-purple-600">3</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">电源假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            系统需要提供稳定的电源供应，包括：
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="font-medium">核心电压</div>
+                                <div class="text-sm text-gray-500">1.3V ±5%</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="font-medium">IO电压</div>
+                                <div class="text-sm text-gray-500">3.3V ±5%</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="font-medium">ADC参考</div>
+                                <div class="text-sm text-gray-500">5V ±2%</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-3">
+                            注：电源监控由内部 VMON 和外部 SBC 共同完成
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 时钟 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-yellow-600">4</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">时钟假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            系统时钟设计需要满足以下要求：
+                        </p>
+                        <div class="space-y-2">
+                            <div class="flex items-center p-3 bg-gray-50 rounded">
+                                <span class="text-green-500 mr-2">✓</span>
+                                <span>外部晶振(XTAL)频率: 4-20MHz</span>
+                            </div>
+                            <div class="flex items-center p-3 bg-gray-50 rounded">
+                                <span class="text-green-500 mr-2">✓</span>
+                                <span>PLL 输出频率: 最高 300MHz</span>
+                            </div>
+                            <div class="flex items-center p-3 bg-gray-50 rounded">
+                                <span class="text-green-500 mr-2">✓</span>
+                                <span>时钟精度: ±0.25% (CAN时钟要求)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 复位 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-red-600">5</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">复位管理假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            复位系统需要具备以下能力：
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border rounded-lg p-4">
+                                <h5 class="font-medium mb-2">🔴 复位源</h5>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• 上电复位 (POR)</li>
+                                    <li>• 看门狗复位</li>
+                                    <li>• 软件复位</li>
+                                    <li>• 外部复位</li>
+                                    <li>• 错误纠正复位</li>
+                                </ul>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <h5 class="font-medium mb-2">🟢 安全状态</h5>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• 正常模式</li>
+                                    <li>• 故障安全模式</li>
+                                    <li>• 复位模式</li>
+                                    <li>• 调试模式</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. 通信 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-indigo-600">6</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">通信接口假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            高速通信需要满足实时性和安全性的双重要求：
+                        </p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">接口</th>
+                                        <th class="px-4 py-2 text-left">安全机制</th>
+                                        <th class="px-4 py-2 text-left">典型应用</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr>
+                                        <td class="px-4 py-2">CAN-FD</td>
+                                        <td class="px-4 py-2">CRC, ACK超时</td>
+                                        <td class="px-4 py-2">动力/底盘</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">Ethernet</td>
+                                        <td class="px-4 py-2">CRC, E2E</td>
+                                        <td class="px-4 py-2">域控制器</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">SPI</td>
+                                        <td class="px-4 py-2">CRC, 回读</td>
+                                        <td class="px-4 py-2">传感器</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. 温度 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-orange-600">7</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">温度范围假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            汽车级芯片需要在极端温度环境下工作：
+                        </p>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center p-3 bg-blue-50 rounded-lg">
+                                <div class="text-sm text-gray-500">存储温度</div>
+                                <div class="text-lg font-bold">-55 ~ +150°C</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-50 rounded-lg">
+                                <div class="text-sm text-gray-500">工作温度</div>
+                                <div class="text-lg font-bold">-40 ~ +125°C</div>
+                            </div>
+                            <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                                <div class="text-sm text-gray-500">结温限制</div>
+                                <div class="text-lg font-bold">150°C</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. 诊断 -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                        <span class="text-xl font-bold text-teal-600">8</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold mb-2">诊断与监控假设</h4>
+                        <p class="text-gray-600 mb-3">
+                            系统需要实现以下诊断功能：
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="text-center p-3 bg-gray-50 rounded">
+                                <div class="text-2xl mb-1">🖥️</div>
+                                <div class="text-sm font-medium">CPU监控</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded">
+                                <div class="text-2xl mb-1">💾</div>
+                                <div class="text-sm font-medium">内存监控</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded">
+                                <div class="text-2xl mb-1">⏰</div>
+                                <div class="text-sm font-medium">时钟监控</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded">
+                                <div class="text-2xl mb-1">🔌</div>
+                                <div class="text-sm font-medium">电压监控</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 总结 -->
+        <div class="mt-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-6 text-white">
+            <h3 class="text-xl font-bold mb-4">📋 系统应用假设总结</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="text-3xl font-bold">8</div>
+                    <div class="text-sm opacity-80">关键假设</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold">ASIL D</div>
+                    <div class="text-sm opacity-80">最高安全等级</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold">-40~125°C</div>
+                    <div class="text-sm opacity-80">工作温度</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold">300MHz</div>
+                    <div class="text-sm opacity-80">最大频率</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2026 功能安全专家 | 参考: AURIX TC3xx Safety Manual</p>
+        </div>
+    </footer>
+</body>
+</html>
