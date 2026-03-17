@@ -131,7 +131,7 @@
 
     <script>
         const API_KEY = 'sk-cmdii5qj47vp26kinq7o7ozcmnupytsks2mwx825adjvbrp5';
-        const API_URL = 'https://api.minimax.chat/v1/text/chatcompletion_v2';
+        const API_URL = 'https://api.xiaomimimo.com/v1/chat/completions';
         
         let chatOpen = false;
         let conversationHistory = [
@@ -183,7 +183,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Authorization': API_KEY`
                     },
                     body: JSON.stringify({
                         model: 'gpt-4o',
