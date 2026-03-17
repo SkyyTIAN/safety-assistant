@@ -8,29 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Inter', sans-serif; }
-        .gradient-bg {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
-        }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-        }
-        .nav-link {
-            position: relative;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #3b82f6;
-            transition: width 0.3s;
-        }
-        .nav-link:hover::after {
-            width: 100%;
-        }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #3b82f6; transition: width 0.3s; }
+        .nav-link:hover::after { width: 100%; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -40,9 +22,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                        </svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
                     </div>
                     <div>
                         <h1 class="text-xl font-bold">功能安全专家</h1>
@@ -54,8 +34,8 @@
                     <a href="chip.html" class="nav-link text-white/90 hover:text-white">芯片查询</a>
                     <a href="architecture.html" class="nav-link text-white/90 hover:text-white">架构设计</a>
                     <a href="mechanism.html" class="nav-link text-white/90 hover:text-white">安全机制</a>
-                    <a href="glossary.html" class="nav-link text-white/90 hover:text-white">术语库</a>
                     <a href="application.html" class="nav-link text-white/90 hover:text-white">系统假设</a>
+                    <a href="glossary.html" class="nav-link text-white/90 hover:text-white">术语库</a>
                 </nav>
             </div>
         </div>
@@ -65,19 +45,11 @@
     <section class="gradient-bg text-white py-16">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <h2 class="text-4xl font-bold mb-4">MCU/SBC 功能安全设计助手</h2>
-            <p class="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">
-                基于功能安全标准，为您提供芯片选型、架构设计、安全机制配置的一站式服务
-            </p>
+            <p class="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">基于功能安全标准，为您提供芯片选型、架构设计、安全机制配置的一站式服务</p>
             <div class="flex justify-center space-x-4">
-                <a href="chip.html" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition">
-                    🔍 芯片查询
-                </a>
-                <a href="architecture.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 border border-blue-400">
-                    🏗️ 架构设计
-                </a>
-                <a href="mechanism.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 border border-blue-400">
-                    📋 安全机制
-                </a>
+                <a href="chip.html" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50">🔍 芯片查询</a>
+                <a href="architecture.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">🏗️ 架构设计</a>
+                <a href="mechanism.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">📋 安全机制</a>
             </div>
         </div>
     </section>
@@ -87,78 +59,36 @@
         <div class="max-w-7xl mx-auto px-4">
             <h3 class="text-2xl font-bold text-gray-800 text-center mb-12">核心功能</h3>
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-300">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-2xl">🔍</span>
-                    </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4"><span class="text-2xl">🔍</span></div>
                     <h4 class="text-lg font-semibold mb-2">芯片查询</h4>
-                    <p class="text-gray-600 text-sm">
-                        查询 MCU/SBC 芯片的功能安全参数，包括安全机制、诊断覆盖率、FIT值等关键信息
-                    </p>
-                    <div class="mt-4 pt-4 border-t">
-                        <span class="text-xs text-blue-600 font-medium">支持芯片:</span>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">AURIX TC3xx</span>
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">TLF35584</span>
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">FS6500</span>
-                        </div>
-                    </div>
+                    <p class="text-gray-600 text-sm">查询 MCU/SBC 芯片的功能安全参数，包括安全机制、诊断覆盖率、FIT值等</p>
+                    <div class="mt-4 pt-4 border-t"><span class="text-xs text-blue-600 font-medium">支持:</span><div class="flex flex-wrap gap-2 mt-2"><span class="px-2 py-1 bg-gray-100 text-xs rounded">AURIX TC3xx</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">TLF35584</span></div></div>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-300">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-2xl">🏗️</span>
-                    </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"><span class="text-2xl">🏗️</span></div>
                     <h4 class="text-lg font-semibold mb-2">架构设计</h4>
-                    <p class="text-gray-600 text-sm">
-                        输入系统架构和 ASIL 等级，自动推荐所需的安全机制，给出裁剪建议
-                    </p>
-                    <div class="mt-4 pt-4 border-t">
-                        <span class="text-xs text-green-600 font-medium">输入资源:</span>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">ADC</span>
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">PWM</span>
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">看门狗</span>
-                        </div>
-                    </div>
+                    <p class="text-gray-600 text-sm">输入系统架构和 ASIL 等级，自动推荐所需的安全机制</p>
+                    <div class="mt-4 pt-4 border-t"><span class="text-xs text-green-600 font-medium">输入:</span><div class="flex flex-wrap gap-2 mt-2"><span class="px-2 py-1 bg-gray-100 text-xs rounded">ADC</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">PWM</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">GTM</span></div></div>
                 </div>
-
-                <!-- Feature 3 -->
-                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-300">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-2xl">📋</span>
-                    </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4"><span class="text-2xl">📋</span></div>
                     <h4 class="text-lg font-semibold mb-2">安全机制详解</h4>
-                    <p class="text-gray-600 text-sm">
-                        输入安全机制名称，获取详细的设计说明、配置步骤和诊断覆盖率计算
-                    </p>
-                    <div class="mt-4 pt-4 border-t">
-                        <span class="text-xs text-purple-600 font-medium">热门机制:</span>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">LBIST</span>
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">MBIST</span>
-                            <span class="px-2 py-1 bg-gray-100 text-xs rounded">PMBIST</span>
-                        </div>
-                    </div>
+                    <p class="text-gray-600 text-sm">输入安全机制名称，获取详细的设计说明、配置步骤和诊断覆盖率</p>
+                    <div class="mt-4 pt-4 border-t"><span class="text-xs text-purple-600 font-medium">机制:</span><div class="flex flex-wrap gap-2 mt-2"><span class="px-2 py-1 bg-gray-100 text-xs rounded">LBIST</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">MBIST</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">看门狗</span></div></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Quick Search -->
-    <section class="py-12 bg-white">
-        <div class="max-w-3xl mx-auto px-4">
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
-                <h3 class="text-xl font-semibold text-center mb-6">快速搜索</h3>
-                <div class="flex space-x-2">
-                    <input type="text" id="quickSearch" placeholder="搜索芯片、安全机制、术语..." 
-                        class="flex-1 px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button onclick="quickSearch()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
-                        搜索
-                    </button>
-                </div>
+    <!-- AI Assistant Section -->
+    <section class="py-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h3 class="text-2xl font-bold mb-4">🤖 需要专业解答？</h3>
+            <p class="text-blue-100 mb-6">关于功能安全的任何问题，都可以咨询 AI 助手</p>
+            <div class="bg-white/10 rounded-xl p-6 backdrop-blur">
+                <p class="text-lg mb-4">💬 添加 <strong>微信：小马</strong> 为好友</p>
+                <p class="text-sm text-blue-200">或直接点击右下角按钮咨询 AI 助手</p>
             </div>
         </div>
     </section>
@@ -167,29 +97,80 @@
     <footer class="bg-gray-800 text-white py-8">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <p class="text-gray-400">© 2026 功能安全专家 | MCU+SBC Design Assistant</p>
-            <p class="text-sm text-gray-500 mt-2">基于 ISO 26262 标准构建</p>
+            <p class="text-sm text-gray-500 mt-2">基于 ISO 26262 标准构建 | 参考 AURIX TC3xx Safety Manual</p>
         </div>
     </footer>
 
+    <!-- AI Chat Widget -->
+    <div id="aiChatWidget" class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleChat()" class="bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 flex items-center space-x-2">
+            <span>💬</span>
+            <span>咨询 AI</span>
+        </button>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full mx-4 h-[500px] flex flex-col shadow-2xl">
+            <div class="p-4 border-b flex justify-between items-center bg-blue-600 text-white rounded-t-2xl">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🐴</span>
+                    <span class="font-bold">功能安全 AI 助手</span>
+                </div>
+                <button onclick="toggleChat()" class="text-white hover:text-gray-200">✕</button>
+            </div>
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
+                <div class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm">
+                    <p class="text-sm">您好！我是功能安全 AI 助手，可以回答关于：</p>
+                    <ul class="text-sm mt-2 space-y-1">
+                        <li>• MCU/SBC 芯片选型</li>
+                        <li>• ISO 26262 标准解读</li>
+                        <li>• 安全机制配置</li>
+                        <li>• ASIL 分解建议</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-white rounded-b-2xl">
+                <div class="flex space-x-2">
+                    <input type="text" id="chatInput" placeholder="请输入问题..." class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key==='Enter')sendMessage()">
+                    <button onclick="sendMessage()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">发送</button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">💡 如需深度咨询，请添加微信 <strong>小马</strong></p>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function quickSearch() {
-            const query = document.getElementById('quickSearch').value.toLowerCase();
-            if (!query) return;
-            
-            // 简单路由
-            if (query.includes('aurix') || query.includes('tc3') || query.includes('tlf') || query.includes('sbc') || query.includes('mcu')) {
-                window.location.href = 'chip.html?q=' + encodeURIComponent(query);
-            } else if (query.includes('lbist') || query.includes('mbist') || query.includes('看门狗') || query.includes('pwm')) {
-                window.location.href = 'mechanism.html?q=' + encodeURIComponent(query);
+        let chatOpen = false;
+        
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            const modal = document.getElementById('chatModal');
+            if (chatOpen) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.getElementById('chatInput').focus();
             } else {
-                window.location.href = 'glossary.html?q=' + encodeURIComponent(query);
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
             }
         }
 
-        // 回车搜索
-        document.getElementById('quickSearch').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') quickSearch();
-        });
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.innerHTML += `<div class="bg-blue-100 p-3 rounded-lg rounded-tr-none text-right"><p class="text-sm">${message}</p></div>`;
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            setTimeout(() => {
+                messagesDiv.innerHTML += `<div class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm"><p class="text-sm">收到您的问题："${message}"</p><p class="text-sm mt-2">当前为演示模式。<br>如需实时对话，请添加微信 <strong>小马</strong> (🐴)</p></div>`;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }, 500);
+        }
     </script>
 </body>
 </html>
