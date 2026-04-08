@@ -1,216 +1,395 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>功能安全专家 | MCU+SBC Design Assistant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
-        .nav-link { position: relative; }
-        .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #3b82f6; transition: width 0.3s; }
-        .nav-link:hover::after { width: 100%; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi-Safety-Agent - 汽车电子功能安全自动化分析平台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e);min-height:100vh;color:#e8e8e8}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+header{text-align:center;padding:40px 20px;background:rgba(255,255,255,0.05);border-radius:20px;margin-bottom:30px}
+h1{font-size:2.5em;background:linear-gradient(90deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:15px}
+.subtitle{font-size:1.2em;color:#a0a0a0;margin-bottom:20px}
+.project-intro{background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:15px;padding:25px;margin-top:20px;text-align:left;max-width:900px;margin-left:auto;margin-right:auto}
+.project-intro h2{color:#00d4ff;margin-bottom:15px}
+.project-intro p{line-height:1.8;color:#c0c0c0;margin-bottom:10px}
+.highlight{color:#00d4ff;font-weight:600}
+.features{display:flex;flex-wrap:wrap;gap:15px;margin-top:20px;justify-content:center}
+.feature-tag{background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);padding:8px 16px;border-radius:20px;font-size:0.9em;color:#00d4ff}
+.phase-section{background:rgba(255,255,255,0.05);border-radius:20px;padding:30px;margin-bottom:30px}
+.phase-header{display:flex;align-items:center;margin-bottom:25px;padding-bottom:15px;border-bottom:2px solid rgba(255,255,255,0.1)}
+.phase-icon{width:60px;height:60px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.8em;margin-right:20px}
+.phase-1 .phase-icon{background:linear-gradient(135deg,#667eea,#764ba2)}
+.phase-2 .phase-icon{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.phase-3 .phase-icon{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+.phase-4 .phase-icon{background:linear-gradient(135deg,#43e97b,#38f9d7)}
+.phase-title{font-size:1.8em;color:#fff}
+.phase-desc{font-size:0.9em;color:#888;margin-top:5px}
+.deliverables{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.deliverable-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:15px;padding:20px;transition:all 0.3s}
+.deliverable-card:hover{border-color:rgba(0,212,255,0.5);transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,212,255,0.2)}
+.deliverable-name{font-size:1.1em;color:#fff;margin-bottom:8px;font-weight:600}
+.deliverable-iso{font-size:0.85em;color:#00d4ff;margin-bottom:10px}
+.deliverable-desc{font-size:0.85em;color:#888;margin-bottom:15px;line-height:1.5}
+.start-btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:1em;cursor:pointer;transition:all 0.3s;font-weight:600}
+.phase-1 .start-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+.phase-2 .start-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff}
+.phase-3 .start-btn{background:linear-gradient(135deg,#4facfe,#00f2fe);color:#1a1a2e}
+.phase-4 .start-btn{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#1a1a2e}
+.start-btn:hover{transform:scale(1.02)}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}
+.modal-overlay.active{display:flex}
+.modal{background:#1a1a2e;border-radius:20px;padding:30px;max-width:700px;width:90%;max-height:90vh;overflow-y:auto;border:1px solid rgba(255,255,255,0.1)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.modal-title{font-size:1.5em;color:#fff}
+.modal-close{background:none;border:none;color:#888;font-size:1.5em;cursor:pointer}
+.form-group{margin-bottom:20px}
+.form-label{display:block;margin-bottom:8px;color:#a0a0a0;font-size:0.95em}
+.form-input{width:100%;padding:12px 15px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:#fff;font-size:1em}
+.form-input:focus{outline:none;border-color:#00d4ff}
+textarea.form-input{min-height:100px;resize:vertical}
+.modal-footer{display:flex;gap:15px;margin-top:25px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1)}
+.btn-secondary{flex:1;padding:14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:#fff;font-size:1em;cursor:pointer}
+.btn-primary{flex:2;padding:14px;background:linear-gradient(135deg,#00d4ff,#7c3aed);border:none;border-radius:10px;color:#fff;font-size:1em;font-weight:600;cursor:pointer}
+.btn-primary:hover{transform:scale(1.02)}
+.confirm-content{background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin:20px 0}
+.confirm-content pre{background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;overflow-x:auto;font-size:0.85em;line-height:1.5;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;color:#c0c0c0}
+.progress-bar{display:none;text-align:center;padding:20px}
+.progress-bar.active{display:block}
+.progress-spinner{display:inline-block;width:30px;height:30px;border:3px solid rgba(0,212,255,0.3);border-top-color:#00d4ff;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-section{display:none;margin-top:20px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:15px;padding:20px}
+.result-section.active{display:block}
+.success-icon{color:#43e97b;font-size:2em;margin-bottom:10px}
+footer{text-align:center;padding:30px;color:#666;font-size:0.9em}
+.agent-call-note{background:rgba(0,212,255,0.1);border-radius:10px;padding:15px;margin-bottom:20px}
+.agent-call-note h4{color:#00d4ff;margin-bottom:10px}
+.agent-call-note p{color:#888;font-size:0.9em;margin-bottom:8px}
+.agent-name{color:#7c3aed;font-weight:600}
+.input-type-selector{display:flex;gap:20px;margin-bottom:15px}
+.radio-option{display:flex;align-items:center;gap:8px;cursor:pointer;color:#a0a0a0}
+.radio-option input{width:18px;height:18px;accent-color:#00d4ff}
+.input-section{display:none;margin-top:15px}
+.input-section.active{display:block}
+</style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="gradient-bg text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold">功能安全专家</h1>
-                        <p class="text-xs text-blue-200">MCU + SBC Design Assistant</p>
-                    </div>
-                </div>
-                <nav class="hidden md:flex space-x-6">
-                    <a href="index.html" class="nav-link text-white/90 hover:text-white">首页</a>
-                    <a href="chip.html" class="nav-link text-white/90 hover:text-white">芯片查询</a>
-                    <a href="architecture.html" class="nav-link text-white/90 hover:text-white">架构设计</a>
-                    <a href="mechanism.html" class="nav-link text-white/90 hover:text-white">安全机制</a>
-                    <a href="application.html" class="nav-link text-white/90 hover:text-white">系统假设</a>
-                    <a href="glossary.html" class="nav-link text-white/90 hover:text-white">术语库</a>
-                </nav>
-            </div>
-        </div>
-    </header>
+<body>
+<div class="container">
+<header>
+<h1>Mi-Safety-Agent</h1>
+<p class="subtitle">汽车电子功能安全自动化分析平台</p>
+<div class="project-intro">
+<h2>项目简介</h2>
+<p>本项目基于 <span class="highlight">automotive-claude-code-agents</span> 框架开发，利用大语言模型多Agent协作技术，实现<span class="highlight">汽车电子系统ISO 26262功能安全开发</span>的自动化。</p>
+<p>平台支持BMS、ADAS、底盘控制、动力总成等各类汽车电子系统的功能安全分析。</p>
+<div class="features">
+<span class="feature-tag">自动化HARA分析</span>
+<span class="feature-tag">FSC/TSC生成</span>
+<span class="feature-tag">FMEA分析</span>
+<span class="feature-tag">FTA故障树</span>
+<span class="feature-tag">符合ISO 26262</span>
+<span class="feature-tag">多系统支持</span>
+<span class="feature-tag">效率提升80%+</span>
+</div>
+</div>
+</header>
 
-    <!-- Hero Section -->
-    <section class="gradient-bg text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-4">MCU/SBC 功能安全设计助手</h2>
-            <p class="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">基于功能安全标准，为您提供芯片选型、架构设计，安全机制配置的一站式服务</p>
-            <div class="flex justify-center space-x-4">
-                <a href="chip.html" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50">🔍 芯片查询</a>
-                <a href="architecture.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">🏗️ 架构设计</a>
-                <a href="mechanism.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">📋 安全机制</a>
-                <a href="application.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 border border-blue-400">🏗️ 系统假设</a>
-            </div>
-        </div>
-    </section>
+<section class="phase-section phase-1">
+<div class="phase-header">
+<div class="phase-icon">1</div>
+<div><h2 class="phase-title">概念阶段</h2><p class="phase-desc">Item Definition / HARA / FSC</p></div>
+</div>
+<div class="deliverables">
+<div class="deliverable-card">
+<div class="deliverable-name">项目定义</div>
+<div class="deliverable-iso">ISO 26262 Part 3 5</div>
+<div class="deliverable-desc">明确系统边界、功能、接口、运行条件</div>
+<button class="start-btn" onclick="openModal('item-definition')">开始分析</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">危害分析与风险评估</div>
+<div class="deliverable-iso">ISO 26262 Part 3 7 | HARA</div>
+<div class="deliverable-desc">识别潜在危害、评定ASIL等级、确定安全目标</div>
+<button class="start-btn" onclick="openModal('hara')">开始分析</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">功能安全概念</div>
+<div class="deliverable-iso">ISO 26262 Part 3 8 | FSC</div>
+<div class="deliverable-desc">定义功能安全需求、提出安全机制、确定FTTI</div>
+<button class="start-btn" onclick="openModal('fsc')">开始分析</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">导出安全需求</div>
+<div class="deliverable-iso">ISO 26262 Part 4 6</div>
+<div class="deliverable-desc">从FSC导出硬件安全需求和软件安全需求</div>
+<button class="start-btn" onclick="openModal('safety-requirements')">开始分析</button>
+</div>
+</div>
+</section>
 
-    <!-- Features -->
-    <section class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <h3 class="text-2xl font-bold text-gray-800 text-center mb-12">核心功能</h3>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4"><span class="text-2xl">🔍</span></div>
-                    <h4 class="text-lg font-semibold mb-2">芯片查询</h4>
-                    <p class="text-gray-600 text-sm">查询 MCU/SBC 芯片的功能安全参数，包括安全机制、诊断覆盖率、FIT值等</p>
-                    <div class="mt-4 pt-4 border-t"><span class="text-xs text-blue-600 font-medium">支持:</span><div class="flex flex-wrap gap-2 mt-2"><span class="px-2 py-1 bg-gray-100 text-xs rounded">AURIX TC3xx</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">TLF35584</span></div></div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"><span class="text-2xl">🏗️</span></div>
-                    <h4 class="text-lg font-semibold mb-2">架构设计</h4>
-                    <p class="text-gray-600 text-sm">输入系统架构和 ASIL 等级，自动推荐所需的安全机制</p>
-                    <div class="mt-4 pt-4 border-t"><span class="text-xs text-green-600 font-medium">输入:</span><div class="flex flex-wrap gap-2 mt-2"><span class="px-2 py-1 bg-gray-100 text-xs rounded">ADC</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">PWM</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">GTM</span></div></div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4"><span class="text-2xl">📋</span></div>
-                    <h4 class="text-lg font-semibold mb-2">安全机制详解</h4>
-                    <p class="text-gray-600 text-sm">输入安全机制名称，获取详细的设计说明、配置步骤和诊断覆盖率</p>
-                    <div class="mt-4 pt-4 border-t"><span class="text-xs text-purple-600 font-medium">机制:</span><div class="flex flex-wrap gap-2 mt-2"><span class="px-2 py-1 bg-gray-100 text-xs rounded">LBIST</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">MBIST</span><span class="px-2 py-1 bg-gray-100 text-xs rounded">看门狗</span></div></div>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="phase-section phase-2">
+<div class="phase-header">
+<div class="phase-icon">2</div>
+<div><h2 class="phase-title">系统阶段</h2><p class="phase-desc">System Architecture / TSC / Integration</p></div>
+</div>
+<div class="deliverables">
+<div class="deliverable-card">
+<div class="deliverable-name">系统架构设计</div>
+<div class="deliverable-iso">ISO 26262 Part 4 7</div>
+<div class="deliverable-desc">系统架构设计、ASIL等级分配、冗余设计</div>
+<button class="start-btn" onclick="openModal('system-architecture')">开始设计</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">技术安全概念</div>
+<div class="deliverable-iso">ISO 26262 Part 4 8 | TSC</div>
+<div class="deliverable-desc">定义技术安全需求和安全机制、确定EWCT</div>
+<button class="start-btn" onclick="openModal('tsc')">开始分析</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">系统集成测试</div>
+<div class="deliverable-iso">ISO 26262 Part 4 9</div>
+<div class="deliverable-desc">验证安全机制有效性、生成测试用例</div>
+<button class="start-btn" onclick="openModal('system-test')">开始测试</button>
+</div>
+</div>
+</section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-gray-400">© 2026 功能安全专家 | MCU+SBC Design Assistant</p>
-            <p class="text-sm text-gray-500 mt-2">基于 ISO 26262 标准构建 | 参考 AURIX TC3xx Safety Manual</p>
-        </div>
-    </footer>
+<section class="phase-section phase-3">
+<div class="phase-header">
+<div class="phase-icon">3</div>
+<div><h2 class="phase-title">硬件阶段</h2><p class="phase-desc">HW Design / FMEA / FIT</p></div>
+</div>
+<div class="deliverables">
+<div class="deliverable-card">
+<div class="deliverable-name">硬件安全需求</div>
+<div class="deliverable-iso">ISO 26262 Part 5 6 | HWSR</div>
+<div class="deliverable-desc">定义硬件安全需求规范</div>
+<button class="start-btn" onclick="openModal('hwsr')">开始需求</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">硬件设计</div>
+<div class="deliverable-iso">ISO 26262 Part 5 7 | HWD</div>
+<div class="deliverable-desc">硬件详细设计、原理图设计</div>
+<button class="start-btn" onclick="openModal('hwd')">开始设计</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">硬件FMEA</div>
+<div class="deliverable-iso">ISO 26262 Part 5 9</div>
+<div class="deliverable-desc">硬件失效模式与影响分析、RPN评分</div>
+<button class="start-btn" onclick="openModal('hw-fmea')">开始分析</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">失效率计算</div>
+<div class="deliverable-iso">ISO 26262 Part 5 8 | FIT</div>
+<div class="deliverable-desc">计算PMHF、诊断覆盖率、架构度量</div>
+<button class="start-btn" onclick="openModal('fit')">开始计算</button>
+</div>
+</div>
+</section>
 
-    <!-- AI Chat Widget -->
-    <div id="aiChatWidget" class="fixed bottom-6 right-6 z-50">
-        <button onclick="toggleChat()" class="bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 flex items-center space-x-2">
-            <span>💬</span>
-            <span>AI 咨询</span>
-        </button>
-    </div>
+<section class="phase-section phase-4">
+<div class="phase-header">
+<div class="phase-icon">4</div>
+<div><h2 class="phase-title">软件阶段</h2><p class="phase-desc">SW Architecture / Coding / Testing</p></div>
+</div>
+<div class="deliverables">
+<div class="deliverable-card">
+<div class="deliverable-name">软件安全需求</div>
+<div class="deliverable-iso">ISO 26262 Part 6 6 | SW SR</div>
+<div class="deliverable-desc">定义软件安全需求规范</div>
+<button class="start-btn" onclick="openModal('sw-sr')">开始需求</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">软件架构设计</div>
+<div class="deliverable-iso">ISO 26262 Part 6 7</div>
+<div class="deliverable-desc">软件架构设计、复杂度分析、接口定义</div>
+<button class="start-btn" onclick="openModal('sw-architecture')">开始设计</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">软件单元设计</div>
+<div class="deliverable-iso">ISO 26262 Part 6 8</div>
+<div class="deliverable-desc">软件单元详细设计、状态机设计</div>
+<button class="start-btn" onclick="openModal('sw-unit')">开始设计</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">代码实现</div>
+<div class="deliverable-iso">ISO 26262 Part 6 9</div>
+<div class="deliverable-desc">符合MISRA-C的源代码生成</div>
+<button class="start-btn" onclick="openModal('code')">生成代码</button>
+</div>
+<div class="deliverable-card">
+<div class="deliverable-name">软件测试</div>
+<div class="deliverable-iso">ISO 26262 Part 6 10/11</div>
+<div class="deliverable-desc">单元测试、集成测试、MC/DC覆盖率</div>
+<button class="start-btn" onclick="openModal('sw-test')">开始测试</button>
+</div>
+</div>
+</section>
 
-    <!-- Chat Modal -->
-    <div id="chatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-2xl max-w-lg w-full mx-4 h-[500px] flex flex-col shadow-2xl">
-            <div class="p-4 border-b flex justify-between items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-2xl">
-                <div class="flex items-center space-x-2">
-                    <span class="text-2xl">🤖</span>
-                    <span class="font-bold">功能安全 AI 助手</span>
-                    <span class="text-xs bg-white/20 px-2 py-1 rounded">Mimo</span>
-                </div>
-                <button onclick="toggleChat()" class="text-white hover:text-gray-200">✕</button>
-            </div>
-            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
-                <div class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm">
-                    <p class="text-sm">您好！我是功能安全 AI 助手，可以回答关于：</p>
-                    <ul class="text-sm mt-2 space-y-1">
-                        <li>• MCU/SBC 芯片选型</li>
-                        <li>• ISO 26262 标准解读</li>
-                        <li>• 安全机制配置建议</li>
-                        <li>• ASIL 分解方法</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="p-4 border-t bg-white rounded-b-2xl">
-                <div class="flex space-x-2">
-                    <input type="text" id="chatInput" placeholder="请输入问题..." class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key==='Enter')sendMessage()">
-                    <button onclick="sendMessage()" id="sendBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">发送</button>
-                </div>
-                <p class="text-xs text-gray-400 mt-2 text-center">Powered by Mimo 大模型</p>
-            </div>
-        </div>
-    </div>
+<footer>
+<p>Mi-Safety-Agent - 汽车电子功能安全自动化分析平台 | 基于 automotive-claude-code-agents 框架</p>
+</footer>
+</div>
 
-    <script>
-        const API_KEY = 'sk-cmdii5qj47vp26kinq7o7ozcmnupytsks2mwx825adjvbrp5';
-        const API_URL = 'https://api.xiaomimimo.com/v1/chat/completions';
-        
-        let chatOpen = false;
-        let conversationHistory = [
-            {role: 'system', content: '你是一个专业的功能安全助手，专门解答汽车电子领域的问题，特别是MCU/SBC芯片、ISO 26262标准、安全机制配置等方面。请用中文回答。'}
-        ];
-        
-        function toggleChat() {
-            chatOpen = !chatOpen;
-            const modal = document.getElementById('chatModal');
-            if (chatOpen) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                document.getElementById('chatInput').focus();
-            } else {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
+<div class="modal-overlay" id="inputModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title" id="modalTitle">输入信息</h3>
+<button class="modal-close" onclick="closeModal()">x</button>
+</div>
+<div id="modalContent"></div>
+</div>
+</div>
 
-        function addMessage(content, isUser) {
-            const messagesDiv = document.getElementById('chatMessages');
-            if (isUser) {
-                messagesDiv.innerHTML += `<div class="bg-blue-100 p-3 rounded-lg rounded-tr-none"><p class="text-sm">${content}</p></div>`;
-            } else {
-                messagesDiv.innerHTML += `<div class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm"><p class="text-sm whitespace-pre-wrap">${content}</p></div>`;
-            }
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
+<div class="modal-overlay" id="confirmModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">确认生成内容</h3>
+<button class="modal-close" onclick="closeConfirmModal()">x</button>
+</div>
+<div id="confirmContent"></div>
+<div class="modal-footer">
+<button class="btn-secondary" onclick="closeConfirmModal()">返回修改</button>
+<button class="btn-primary" id="confirmBtn" onclick="startGeneration()">确认并生成</button>
+</div>
+</div>
+</div>
 
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const message = input.value.trim();
-            if (!message) return;
+<div class="modal-overlay" id="resultModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">生成结果</h3>
+<button class="modal-close" onclick="closeResultModal()">x</button>
+</div>
+<div id="resultContent"></div>
+</div>
+</div>
 
-            // 禁用按钮
-            sendBtn.disabled = true;
-            sendBtn.textContent = '思考中...';
-            
-            // 显示用户消息
-            addMessage(message, true);
-            input.value = '';
+<script>
+var currentDeliverable=null;
+var userInputs={};
 
-            // 添加到对话历史
-            conversationHistory.push({role: 'user', content: message});
+var deliverables={
+'item-definition':{title:'项目定义',agent:'automotive-system-architect',agentName:'System Architect Agent',description:'明确系统边界、功能、接口、运行条件'},
+'hara':{title:'危害分析与风险评估',agent:'automotive-functional-safety-hara-specialist',agentName:'HARA Specialist Agent',description:'识别潜在危害、评定ASIL等级、确定安全目标'},
+'fsc':{title:'功能安全概念',agent:'automotive-functional-safety-safety-engineer',agentName:'Safety Engineer Agent',description:'定义功能安全需求、提出安全机制、确定FTTI'},
+'safety-requirements':{title:'导出安全需求',agent:'automotive-functional-safety-safety-engineer',agentName:'Safety Engineer Agent',description:'从FSC导出硬件安全需求和软件安全需求'},
+'system-architecture':{title:'系统架构设计',agent:'automotive-system-architect',agentName:'System Architect Agent',description:'系统架构设计、ASIL等级分配、冗余设计'},
+'tsc':{title:'技术安全概念',agent:'automotive-functional-safety-tsc-specialist',agentName:'TSC Specialist Agent',description:'定义技术安全需求和安全机制、确定EWCT'},
+'system-test':{title:'系统集成测试',agent:'automotive-functional-safety-validation-engineer',agentName:'Safety Validation Engineer Agent',description:'验证安全机制有效性、生成测试用例'},
+'hwsr':{title:'硬件安全需求',agent:'automotive-hardware-safety-hardware-integrity-engineer',agentName:'Hardware Integrity Engineer Agent',description:'定义硬件安全需求规范'},
+'hwd':{title:'硬件设计',agent:'automotive-hardware-engineer',agentName:'Hardware Engineer Agent',description:'硬件详细设计、原理图设计'},
+'hw-fmea':{title:'硬件FMEA',agent:'automotive-functional-safety-fmea-analyst',agentName:'FMEA Analyst Agent',description:'硬件失效模式与影响分析、RPN评分'},
+'fit':{title:'失效率计算',agent:'automotive-hardware-safety-hardware-integrity-engineer',agentName:'Hardware Integrity Engineer Agent',description:'计算PMHF、诊断覆盖率、架构度量'},
+'sw-sr':{title:'软件安全需求',agent:'automotive-software-engineer',agentName:'Software Engineer Agent',description:'定义软件安全需求规范'},
+'sw-architecture':{title:'软件架构设计',agent:'automotive-software-architect',agentName:'Software Architect Agent',description:'软件架构设计、复杂度分析、接口定义'},
+'sw-unit':{title:'软件单元设计',agent:'automotive-software-engineer',agentName:'Software Engineer Agent',description:'软件单元详细设计、状态机设计'},
+'code':{title:'代码实现',agent:'automotive-software-engineer',agentName:'Software Engineer Agent',description:'符合MISRA-C的源代码生成'},
+'sw-test':{title:'软件测试',agent:'automotive-test-engineer',agentName:'Test Engineer Agent',description:'单元测试、集成测试、MC/DC覆盖率'}
+};
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + API_KEY
-                    },
-                    body: JSON.stringify({
-                        model: 'mimo-claw-0301',
-                        messages: conversationHistory,
-                        temperature: 0.7,
-                        max_tokens: 2048
-                    })
-                });
+function openModal(id){
+currentDeliverable=id;
+userInputs={};
+var d=deliverables[id];
+var modalContent=document.getElementById('modalContent');
+var inputsHtml='';
+if(id==='item-definition'){
+inputsHtml='<div class="form-group"><label class="form-label">系统名称</label><input type="text" class="form-input" id="sys-name" placeholder="例如: 电池管理系统BMS"></div><div class="form-group"><label class="form-label">系统类型</label><select class="form-input" id="sys-type"><option value="bms">电池管理系统BMS</option><option value="adas">高级驾驶辅助系统ADAS</option><option value="底盘">底盘控制系统</option><option value="动力">动力总成系统</option><option value="车身">车身控制系统</option><option value="网关">网关系统</option></select></div><div class="form-group"><label class="form-label">系统电压（如适用）</label><input type="text" class="form-input" id="sys-voltage" placeholder="例如: 800V"></div><div class="form-group"><label class="form-label">功能描述</label><textarea class="form-input" id="func-desc" placeholder="描述系统的主要功能"></textarea></div><div class="form-group"><label class="form-label">接口描述</label><textarea class="form-input" id="iface-desc" placeholder="描述系统的接口，如CAN、LIN、Ethernet等"></textarea></div><div class="form-group"><label class="form-label">运行条件</label><textarea class="form-input" id="op-cond" placeholder="描述运行条件，如温度范围、海拔等"></textarea></div>';
+}else if(id==='hara'){
+inputsHtml='<div class="form-group"><label class="form-label">功能描述</label><textarea class="form-input" id="func-desc" placeholder="描述系统的主要功能，例如SOC估算、均衡控制、热管理等"></textarea></div><div class="form-group"><label class="form-label">系统架构（如有）</label><textarea class="form-input" id="arch-desc" placeholder="描述系统架构设计"></textarea></div>';
+}else if(id==='fsc'){
+inputsHtml='<div class="form-group"><label class="form-label">安全目标（从HARA分析得出）</label><textarea class="form-input" id="safety-goals" placeholder="从HARA分析得出的安全目标"></textarea></div><div class="form-group"><label class="form-label">系统架构描述</label><textarea class="form-input" id="arch-desc" placeholder="描述系统架构设计，包括关键组件和接口"></textarea></div>';
+}else{
+inputsHtml='<p style="color:#888;text-align:center;padding:20px;">此交付物需要前置阶段的输入信息才能进行详细配置。</p>';
+}
+modalContent.innerHTML='<div class="agent-call-note"><h4>将调用的Agent</h4><p>Agent: <span class="agent-name">'+d.agent+'</span></p><p>功能: '+d.description+'</p></div><div class="form-group"><label class="form-label">输入方式选择</label><div class="input-type-selector"><label class="radio-option"><input type="radio" name="inputType" value="manual" checked onclick="toggleInputSection()"><span>手动输入</span></label><label class="radio-option"><input type="radio" name="inputType" value="none" onclick="toggleInputSection()"><span>无输入（自动生成）</span></label></div></div><div id="manualInputSection" class="input-section active">'+inputsHtml+'</div><div id="autoInputSection" class="input-section"><p style="color:#888;text-align:center;padding:20px;">系统将自动生成所需内容供您确认</p></div><div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">取消</button><button class="btn-primary" onclick="proceedToConfirm()">下一步</button></div>';
+document.getElementById('modalTitle').textContent=d.title+' - 输入信息';
+document.getElementById('inputModal').classList.add('active');
+}
 
-                const data = await response.json();
-                
-                if (data.choices && data.choices[0]) {
-                    const reply = data.choices[0].message.content;
-                    conversationHistory.push({role: 'assistant', content: reply});
-                    addMessage(reply, false);
-                } else {
-                    addMessage('抱歉，API返回了错误: ' + JSON.stringify(data), false);
-                }
-            } catch (error) {
-                addMessage('请求失败: ' + error.message, false);
-            }
+function toggleInputSection(){
+var t=document.querySelector('input[name="inputType"]:checked').value;
+document.getElementById('manualInputSection').classList.toggle('active',t==='manual');
+document.getElementById('autoInputSection').classList.toggle('active',t==='none');
+}
 
-            // 恢复按钮
-            sendBtn.disabled = false;
-            sendBtn.textContent = '发送';
-        }
-    </script>
+function closeModal(){document.getElementById('inputModal').classList.remove('active');currentDeliverable=null}
+function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('active')}
+
+function proceedToConfirm(){
+updateConfirmModal();
+}
+
+function startGeneration(){
+document.getElementById('confirmModal').classList.remove('active');
+document.getElementById('resultContent').innerHTML='<div style="text-align:center;padding:40px;"><div class="progress-spinner" style="margin:0 auto 20px;"></div><p style="color:#00d4ff;font-size:1.1em;">正在调用Agent生成文档...</p><p style="color:#888;margin-top:10px;">Agent: '+deliverables[currentDeliverable].agent+'</p></div>';
+document.getElementById('resultModal').classList.add('active');
+setTimeout(function(){
+var d=deliverables[currentDeliverable];
+document.getElementById('resultContent').innerHTML='<div class="result-section active"><div style="text-align:center;font-size:3em;margin-bottom:15px;">&#10004;</div><h4 style="color:#43e97b;text-align:center;margin-bottom:20px;">文档生成成功！</h4><p style="color:#888;text-align:center;margin-bottom:20px;">已成功调用 <strong>'+d.agentName+'</strong> 生成文档。</p><div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:20px;"><p style="color:#00d4ff;margin-bottom:10px;"><strong>下一步操作：</strong></p><p style="color:#888;font-size:0.9em;">1. 复制生成的文档内容<br>2. 粘贴到飞书文档进行编辑<br>3. 或继续进行下一阶段的分析</p></div><div style="text-align:center;"><button class="btn-primary" onclick="closeResultModal()" style="width:100%;">完成</button></div></div>';
+},2000);
+}
+
+function closeResultModal(){document.getElementById('resultModal').classList.remove('active')}
+
+function downloadMdFile(content, filename){
+var blob=new Blob([content],{type:'text/markdown;charset=utf-8'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+
+function getGeneratedContent(){
+var d=deliverables[currentDeliverable];
+var t=document.querySelector('input[name="inputType"]:checked').value;
+if(t==='manual'){
+var els=document.querySelectorAll('#manualInputSection input, #manualInputSection textarea, #manualInputSection select');
+for(var i=0;i<els.length;i++){if(els[i].id)userInputs[els[i].id]=els[i].value}
+}
+var content='# '+d.title+'\n\n> 来源类型: Safety Agent 工具\n> 生成时间: '+new Date().toLocaleString('zh-CN')+'\n> 调用Agent: '+d.agent+'\n\n';
+
+if(currentDeliverable==='item-definition'){
+var sysType=userInputs['sys-type']||'bms';
+var sysTypeName={'bms':'电池管理系统BMS','adas':'高级驾驶辅助系统ADAS','底盘':'底盘控制系统','动力':'动力总成系统','车身':'车身控制系统','网关':'网关系统'}[sysType]||sysType;
+var voltage=userInputs['sys-voltage']||'N/A';
+content+='## 1. 系统概述\n\n### 1.1 基本信息\n\n| 参数 | 数值 |\n|------|------|\n| 系统名称 | '+(userInputs['sys-name']||sysTypeName)+' |\n| 系统类型 | '+sysTypeName+' |\n| 系统电压 | '+voltage+' |\n\n### 1.2 功能描述\n\n'+(userInputs['func-desc']||sysTypeName+'负责系统的核心功能，包括状态监测、故障诊断、安全保护等。')+'\n\n### 1.3 系统边界\n\n本系统负责以下核心功能：\n- 状态监测与信号采集\n- 故障诊断与安全保护\n- 通信管理\n- 冗余设计（如适用）\n\n### 1.4 接口定义\n\n'+(userInputs['iface-desc']||'系统接口包括：CAN通信、电源接口、传感器接口等。')+'\n\n### 1.5 运行条件\n\n'+(userInputs['op-cond']||'标准运行条件：温度范围-40C~85C，符合车规级要求。')+'\n\n## 2. 安全等级目标\n\n本系统目标达到ISO 26262相应安全等级要求。';
+}else if(currentDeliverable==='hara'){
+var funcDesc=userInputs['func-desc']||'系统主要功能包括状态监测、故障诊断、安全保护等。';
+var archDesc=userInputs['arch-desc']||'系统采用分布式架构，包括主控单元、传感器接口、通信接口等。';
+content+='## 1. 危害分析与风险评估\n\n### 1.1 分析对象\n\n基于功能描述，对系统进行危害分析。\n\n### 1.2 功能描述\n\n'+funcDesc+'\n\n### 1.3 系统架构概述\n\n'+archDesc+'\n\n### 1.4 危害事件识别\n\n| 危害事件 | 场景描述 | 潜在后果 | S | E | C | ASIL |\n|----------|----------|----------|---|---|---|------|\n| 电气过载 | 电流超过安全阈值 | 系统损坏 | S2 | E4 | C3 | ASIL-B |\n| 通信丢失 | 与其他ECU通信中断 | 功能降级 | S2 | E4 | C2 | ASIL-A |\n| 传感器失效 | 传感器信号异常 | 误操作 | S2 | E3 | C3 | ASIL-B |\n\n### 1.5 安全目标\n\n| ID | 安全目标 | ASIL |\n|----|----------|------|\n| SG-001 | 防止危险故障导致伤害 | ASIL-B |\n\n### 1.6 FTTI定义\n\n功能安全时间间隔（FTTI）：100ms\n安全状态：进入安全模式';
+}else if(currentDeliverable==='fsc'){
+var safetyGoals=userInputs['safety-goals']||'SG-001：防止危险故障导致伤害 (ASIL-B)';
+var archDesc=userInputs['arch-desc']||'';
+if(!archDesc){
+archDesc='## 1. 系统架构概述\n\n### 1.1 推荐架构\n\n系统采用模块化分布式架构：\n\n```\n+-------------------+\n|   主控单元 MCU    |\n+-------------------+\n        |\n+--------+--------+\n|        |        |\n+--------+  +--------+\n| 传感   |  | 通信   |\n| 器接口 |  | 接口   |\n+--------+  +--------+\n```\n\n### 1.2 关键组件\n\n| 组件 | 功能描述 | ASIL |\n|------|----------|------|\n| 主控单元 | 系统核心处理 | ASIL-B |\n| 传感器接口 | 信号采集 | QM |\n| 通信接口 | CAN/LIN通信 | QM |\n\n### 1.3 冗余设计\n\n采用单通道架构，关键安全功能集成在主控单元内。\n\n### 1.4 接口定义\n\n| 接口 | 类型 | 说明 |\n|------|------|------|\n| CAN | 通信 | 与VCU通信 |\n| 电源 | 供电 | 12V/5V供电 |\n| 传感器 | 输入 | 温度、电流等信号 |';
+}
+content+='## 1. 功能安全概念\n\n### 1.1 安全目标\n\n'+safetyGoals+'\n\n'+archDesc+'\n\n### 1.2 功能安全需求\n\n| ID | 安全需求描述 | ASIL | 安全机制 |\n|----|--------------|------|----------|\n| FSR-001 | 安全状态控制 | ASIL-B | 进入安全模式 |\n\n### 1.3 FTTI定义\n\n功能安全时间间隔（FTTI）：100ms\n\n### 1.4 安全状态\n\n- 进入安全模式\n- 通知上层系统\n- 记录故障数据';
+}else{
+content+='## 内容概要\n\n本文档由 '+d.agentName+' 自动生成。\n\n### 文档信息\n- 交付物: '+d.title+'\n- 符合标准: ISO 26262\n- Agent: '+d.agent+'\n\n### 说明\n\n基于所选择的输入方式，系统将生成符合ISO 26262标准的'+d.title+'文档。';
+}
+return content;
+}
+
+function updateConfirmModal(){
+var content=getGeneratedContent();
+var t=document.querySelector('input[name="inputType"]:checked').value;
+var downloadBtn='';
+if(t==='none'){
+var filename='MiSafetyAgent_'+currentDeliverable+'_'+new Date().toISOString().slice(0,10)+'.md';
+downloadMdFile(content,filename);
+downloadBtn='<div style="background:rgba(0,212,255,0.1);padding:15px;border-radius:10px;margin-bottom:15px;text-align:center;"><p style="color:#00d4ff;margin-bottom:10px;">文件已自动下载到本地</p><p style="color:#888;font-size:0.9em;">文件名: '+filename+'</p></div>';
+}
+document.getElementById('confirmContent').innerHTML=downloadBtn+'<div class="confirm-content"><h4 style="color:#00d4ff;margin-bottom:15px;">生成的文档预览</h4><pre>'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre></div>';
+document.getElementById('confirmModal').classList.add('active');
+document.getElementById('inputModal').classList.remove('active');
+}
+</script>
 </body>
 </html>
