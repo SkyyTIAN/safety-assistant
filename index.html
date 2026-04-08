@@ -324,12 +324,30 @@ updateConfirmModal();
 
 function startGeneration(){
 document.getElementById('confirmModal').classList.remove('active');
-document.getElementById('resultContent').innerHTML='<div style="text-align:center;padding:40px;"><div class="progress-spinner" style="margin:0 auto 20px;"></div><p style="color:#00d4ff;font-size:1.1em;">正在调用Agent生成文档...</p><p style="color:#888;margin-top:10px;">Agent: '+deliverables[currentDeliverable].agent+'</p></div>';
+document.getElementById('resultContent').innerHTML='<div style="text-align:center;padding:40px;"><div class="progress-spinner" style="margin:0 auto 20px;"></div><p style="color:#00d4ff;font-size:1.1em;">正在生成文档...</p></div>';
 document.getElementById('resultModal').classList.add('active');
 setTimeout(function(){
 var d=deliverables[currentDeliverable];
-document.getElementById('resultContent').innerHTML='<div class="result-section active"><div style="text-align:center;font-size:3em;margin-bottom:15px;">&#10004;</div><h4 style="color:#43e97b;text-align:center;margin-bottom:20px;">文档生成成功！</h4><p style="color:#888;text-align:center;margin-bottom:20px;">已成功调用 <strong>'+d.agentName+'</strong> 生成文档。</p><div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:20px;"><p style="color:#00d4ff;margin-bottom:10px;"><strong>下一步操作：</strong></p><p style="color:#888;font-size:0.9em;">1. 复制生成的文档内容<br>2. 粘贴到飞书文档进行编辑<br>3. 或继续进行下一阶段的分析</p></div><div style="text-align:center;"><button class="btn-primary" onclick="closeResultModal()" style="width:100%;">完成</button></div></div>';
-},2000);
+var content=getGeneratedContent();
+var filename='MiSafetyAgent_'+currentDeliverable+'_'+new Date().toISOString().slice(0,10)+'.md';
+var escapedContent=content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+document.getElementById('resultContent').innerHTML='<div class="result-section active"><h4 style="color:#43e97b;margin-bottom:15px;">文档已生成！</h4><p style="color:#888;margin-bottom:15px;">文件名: <strong>'+filename+'</strong></p><div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:15px;max-height:300px;overflow-y:auto;text-align:left;font-family:monospace;font-size:0.85em;line-height:1.6;color:#c0c0c0;">'+escapedContent+'</div><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn-primary" onclick="openInNewTab()" style="flex:1;">在新窗口打开</button><button class="btn-primary" onclick="downloadMdFile(getGeneratedContent(),\''+filename+'\')" style="flex:1;">下载.md文件</button><button class="btn-secondary" onclick="copyToClipboard()" style="flex:1;">复制内容</button></div><div id="copyStatus" style="color:#43e97b;text-align:center;margin-top:10px;display:none;">已复制到剪贴板！</div><div style="margin-top:15px;"><button class="btn-secondary" onclick="closeResultModal()" style="width:100%;">关闭</button></div></div>';
+},1000);
+}
+
+function openInNewTab(){
+var content=getGeneratedContent();
+var newWindow=window.open('','_blank');
+newWindow.document.write('<html><head><title>Mi-Safety-Agent Document</title><style>body{font-family:system-ui,sans-serif;padding:20px;background:#1a1a2e;color:#e8e8e8;white-space:pre-wrap;word-wrap:break-word}textarea{width:100%;height:80vh;background:#2a2a3e;color:#c0c0c0;border:1px solid #444;border-radius:10px;padding:15px;font-family:monospace;font-size:14px}</style></head><body><h3 style="color:#00d4ff;">Mi-Safety-Agent 生成文档</h3><textarea id="content">'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea><script>function save(){var t=document.getElementById("content").value;var b=new Blob([t],{type:"text/markdown"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="MiSafetyAgent_doc.md";a.click()}<\/script><button onclick="save()" style="margin-top:10px;padding:10px 20px;background:#00d4ff;color:#fff;border:none;border-radius:5px;cursor:pointer">下载MD文件</button></body></html>');
+newWindow.document.close();
+}
+
+function copyToClipboard(){
+var content=getGeneratedContent();
+navigator.clipboard.writeText(content).then(function(){
+document.getElementById('copyStatus').style.display='block';
+setTimeout(function(){document.getElementById('copyStatus').style.display='none';},2000);
+});
 }
 
 function closeResultModal(){document.getElementById('resultModal').classList.remove('active')}
@@ -379,14 +397,7 @@ return content;
 
 function updateConfirmModal(){
 var content=getGeneratedContent();
-var t=document.querySelector('input[name="inputType"]:checked').value;
-var downloadBtn='';
-if(t==='none'){
-var filename='MiSafetyAgent_'+currentDeliverable+'_'+new Date().toISOString().slice(0,10)+'.md';
-downloadMdFile(content,filename);
-downloadBtn='<div style="background:rgba(0,212,255,0.1);padding:15px;border-radius:10px;margin-bottom:15px;text-align:center;"><p style="color:#00d4ff;margin-bottom:10px;">文件已自动下载到本地</p><p style="color:#888;font-size:0.9em;">文件名: '+filename+'</p></div>';
-}
-document.getElementById('confirmContent').innerHTML=downloadBtn+'<div class="confirm-content"><h4 style="color:#00d4ff;margin-bottom:15px;">生成的文档预览</h4><pre>'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre></div>';
+document.getElementById('confirmContent').innerHTML='<div class="confirm-content"><h4 style="color:#00d4ff;margin-bottom:15px;">生成的文档预览</h4><pre>'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre></div>';
 document.getElementById('confirmModal').classList.add('active');
 document.getElementById('inputModal').classList.remove('active');
 }
