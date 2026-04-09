@@ -53,6 +53,9 @@ textarea.form-input{min-height:100px;resize:vertical}
 .btn-secondary{flex:1;padding:14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:#fff;font-size:1em;cursor:pointer}
 .btn-primary{flex:2;padding:14px;background:linear-gradient(135deg,#00d4ff,#7c3aed);border:none;border-radius:10px;color:#fff;font-size:1em;font-weight:600;cursor:pointer}
 .btn-primary:hover{transform:scale(1.02)}
+.btn-feishu{flex:1;padding:14px;background:linear-gradient(135deg,#00c48c,#7c3aed);border:none;border-radius:10px;color:#fff;font-size:1em;font-weight:600;cursor:pointer}
+.btn-feishu:hover{transform:scale(1.02)}
+.btn-feishu:disabled{opacity:0.6;cursor:not-allowed}
 .confirm-content{background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin:20px 0}
 .confirm-content pre{background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;overflow-x:auto;font-size:0.85em;line-height:1.5;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;color:#c0c0c0}
 .progress-bar{display:none;text-align:center;padding:20px}
@@ -72,6 +75,8 @@ footer{text-align:center;padding:30px;color:#666;font-size:0.9em}
 .radio-option input{width:18px;height:18px;accent-color:#00d4ff}
 .input-section{display:none;margin-top:15px}
 .input-section.active{display:block}
+.feishu-status{mpadding:8px 12px;background:rgba(0,197,140,0.15);border:1px solid rgba(0,197,140,0.3);border-radius:8px;color:#00c48c;font-size:0.85em;margin-left:auto}
+.feishu-status.error{background:rgba(255,100,100,0.15);border-color:rgba(255,100,100,0.3);color:#ff6464}
 </style>
 </head>
 <body>
@@ -267,9 +272,15 @@ footer{text-align:center;padding:30px;color:#666;font-size:0.9em}
 </div>
 
 <script>
+// ============== 配置区域 ==============
+// TODO: 部署 Cloudflare Worker 后，将 Worker URL 配置在这里
+var FEISHU_WORKER_URL = '';  // 例如: 'https://feishu-export.your-worker.workers.dev'
+
+// ============== 核心变量 ==============
 var currentDeliverable=null;
 var userInputs={};
 
+// ============== 交付物定义 ==============
 var deliverables={
 'item-definition':{title:'项目定义',agent:'automotive-system-architect',agentName:'System Architect Agent',description:'明确系统边界、功能、接口、运行条件'},
 'hara':{title:'危害分析与风险评估',agent:'automotive-functional-safety-hara-specialist',agentName:'HARA Specialist Agent',description:'识别潜在危害、评定ASIL等级、确定安全目标'},
@@ -289,6 +300,55 @@ var deliverables={
 'sw-test':{title:'软件测试',agent:'automotive-test-engineer',agentName:'Test Engineer Agent',description:'单元测试、集成测试、MC/DC覆盖率'}
 };
 
+// ============== 飞书导出功能 ==============
+async function exportToFeishu() {
+    var content = getGeneratedContent();
+    var d = deliverables[currentDeliverable];
+    var title = 'MiSafety_' + d.title + '_' + new Date().toISOString().slice(0,10);
+
+    if (!FEISHU_WORKER_URL) {
+        alert('飞书导出功能未配置。\n\n请参考部署说明配置 Cloudflare Worker。');
+        return;
+    }
+
+    var btn = document.getElementById('feishuExportBtn');
+    btn.disabled = true;
+    btn.textContent = '正在创建文档...';
+
+    try {
+        var response = await fetch(FEISHU_WORKER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                content: content
+            })
+        });
+
+        var result = await response.json();
+
+        if (result.success && result.data && result.data.document_id) {
+            var docUrl = 'https://feishu.cn/docx/' + result.data.document_id;
+            document.getElementById('feishuStatus').innerHTML = 
+                '<span style="color:#43e97b;">✓ 文档已创建！</span><br>' +
+                '<a href="' + docUrl + '" target="_blank" style="color:#00d4ff;">点击打开飞书文档</a>';
+            document.getElementById('feishuStatus').className = 'feishu-status';
+        } else {
+            throw new Error(result.message || '创建文档失败');
+        }
+    } catch (error) {
+        document.getElementById('feishuStatus').innerHTML = 
+            '<span style="color:#ff6464;">✗ 导出失败: ' + error.message + '</span>';
+        document.getElementById('feishuStatus').className = 'feishu-status error';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '导出到飞书文档';
+    }
+}
+
+// ============== UI 函数 ==============
 function openModal(id){
 currentDeliverable=id;
 userInputs={};
@@ -331,7 +391,7 @@ var d=deliverables[currentDeliverable];
 var content=getGeneratedContent();
 var filename='MiSafetyAgent_'+currentDeliverable+'_'+new Date().toISOString().slice(0,10)+'.md';
 var escapedContent=content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-document.getElementById('resultContent').innerHTML='<div class="result-section active"><h4 style="color:#43e97b;margin-bottom:15px;">文档已生成！</h4><p style="color:#888;margin-bottom:15px;">文件名: <strong>'+filename+'</strong></p><div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:15px;max-height:300px;overflow-y:auto;text-align:left;font-family:monospace;font-size:0.85em;line-height:1.6;color:#c0c0c0;">'+escapedContent+'</div><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn-primary" onclick="openInNewTab()" style="flex:1;">在新窗口打开</button><button class="btn-primary" onclick="downloadMdFile(getGeneratedContent(),\''+filename+'\')" style="flex:1;">下载.md文件</button><button class="btn-secondary" onclick="copyToClipboard()" style="flex:1;">复制内容</button></div><div id="copyStatus" style="color:#43e97b;text-align:center;margin-top:10px;display:none;">已复制到剪贴板！</div><div style="margin-top:15px;"><button class="btn-secondary" onclick="closeResultModal()" style="width:100%;">关闭</button></div></div>';
+document.getElementById('resultContent').innerHTML='<div class="result-section active"><h4 style="color:#43e97b;margin-bottom:15px;">文档已生成！</h4><p style="color:#888;margin-bottom:15px;">文件名: <strong>'+filename+'</strong></p><div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:15px;max-height:300px;overflow-y:auto;text-align:left;font-family:monospace;font-size:0.85em;line-height:1.6;color:#c0c0c0;">'+escapedContent+'</div><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn-primary" onclick="openInNewTab()" style="flex:1;">在新窗口打开</button><button class="btn-primary" onclick="downloadMdFile(getGeneratedContent(),\''+filename+'\')" style="flex:1;">下载.md文件</button><button class="btn-secondary" onclick="copyToClipboard()" style="flex:1;">复制内容</button></div><div id="feishuBtnContainer" style="display:flex;gap:10px;margin-top:10px;"><button id="feishuExportBtn" class="btn-feishu" onclick="exportToFeishu()" style="flex:1;">导出到飞书文档</button></div><div id="feishuStatus" class="feishu-status" style="display:none;margin-top:10px;"></div><div id="copyStatus" style="color:#43e97b;text-align:center;margin-top:10px;display:none;">已复制到剪贴板！</div><div style="margin-top:15px;"><button class="btn-secondary" onclick="closeResultModal()" style="width:100%;">关闭</button></div></div>';
 },1000);
 }
 
